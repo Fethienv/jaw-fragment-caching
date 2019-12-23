@@ -4,15 +4,21 @@ Simple fragment caching wordpress plugin
 
 ## How use it
 ### Method 1: Direct
-`if (!jaw_get_cache_part('Section_name', 'Refernce_in_section')) {
+`
+
+if (!jaw_get_cache_part('Section_name', 'Refernce_in_section')) {
      jaw_start_fragment_caching();
      
      // your code
      
      jaw_set_cache_part('Section_name', 'Refernce_in_section');
-}`
+}
+
+`
 ### Method 1: Indirect
-`function get_template( $template_path, $template_name, $cached = true ) {
+`
+
+function get_template( $template_path, $template_name, $cached = true ) {
   
     $last_fragment_caching_status = FRAGMENT_CACHING_STATUS;
     if(!$cached){
@@ -43,7 +49,9 @@ Simple fragment caching wordpress plugin
         runkit_constant_redefine("FRAGMENT_CACHING_STATUS", $last_fragment_caching_status);
     }
     
-}`
+}
+
+`
 ## Next update:
 - control fragments form wordpress dashbord
   * Add or delete fragment 
