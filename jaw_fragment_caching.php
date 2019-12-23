@@ -30,4 +30,6 @@ if (!defined('JAW_TEXT_DOMAIN'))
 
 include 'plugin_registeration.php';
 include 'jaw_core_functions.php';
-include 'jaw_admin_functions.php';
+if (is_admin()) {
+    include 'jaw_admin_functions.php';
+}
