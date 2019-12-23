@@ -1,23 +1,16 @@
 <?php
 
 /**
- * comments will be updated
- **/
-
-
-/**
  * Replace Image URL
  * 
  * Filter content and replace image urls.
  */
-function jaw_get_cache_part($section, $refrence) {
+function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT") {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
-
-        global $EXPIRATION_table;
-        $exp = $EXPIRATION_table[$section . "_" . $refrence];
+        global $EXPIRATION_constants;
+        $exp = $EXPIRATION_constants[$exp];
         $load_fragment_cache = jaw_load_fragment_cache($section, $refrence, $exp);
-
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -34,14 +27,12 @@ function jaw_get_cache_part($section, $refrence) {
  * 
  * Filter content and replace image urls.
  */
-function jaw_set_cache_part($section, $refrence) {
+function jaw_set_cache_part($section, $refrence, $exp = "JAW_PERSISTANT") {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
-
-        global $EXPIRATION_table;
-        $exp = $EXPIRATION_table[$section . "_" . $refrence];
+        global $EXPIRATION_constants;
+        $exp = $EXPIRATION_constants[$exp];
         $create_fragment_cache = jaw_create_fragment_cache($section, $refrence, $exp);
-
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -115,8 +106,8 @@ function jaw_create_fragment_cache($section, $refrence, $exp = "") {
  * 
  * Filter content and replace image urls.
  */
-function jaw_remove_fragment_cache($section, $refrence, $exp = "") {
-    
+function jaw_remove_fragment_cache($fragment_cache_file) {
+    return unlink($fragment_cache_file);
 }
 
 /**
@@ -129,8 +120,14 @@ function jaw_load_fragment_cache($section, $refrence, $exp = "") {
     $fragment_cache_dir = FRAGMENT_DIR . $wp_query->post->ID . '/' . $section . '/';
     $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '.html';
     if (file_exists($fragment_cache_file)) {
-        require_once $fragment_cache_file;
-        return true;
+        $last_change = filectime($fragment_cache_file);
+        $duration = time() - $last_change; 
+        if($exp >= $duration || $exp == 0){
+          require_once $fragment_cache_file;
+          return true;
+        }
+        jaw_remove_fragment_cache($fragment_cache_file);
+        return false;
     }
     return false;
 }
