@@ -52,13 +52,21 @@ function get_template( $template_path, $template_name, $cached = true ) {
 }
 
 ```
-## Exiration constants:
+## Parametres:
+
+* Section_name: optional name
+* Refernce_in_section : optional name
+* Expiration_constant: must be one of plugin Expiration constants or Trensient API constants
+
+Note: those parametres must be the same in jaw_get_cache_part and jaw_set_cache_part for each section and referce
+
+## Expiration constants:
 
 - JAW_RARLY : value controllable form admin dashboard
 - JAW_PERSISTANT: set cache to persistant
-* JAW_SPECIFIC_1:  value controllable form admin dashboard
-* JAW_SPECIFIC_1:  value controllable form admin dashboard
-* JAW_SPECIFIC_3:  value controllable form admin dashboard
+- JAW_SPECIFIC_1:  value controllable form admin dashboard
+- JAW_SPECIFIC_1:  value controllable form admin dashboard
+- JAW_SPECIFIC_3:  value controllable form admin dashboard
 
 And you can use Wordpress Trensient API constants
 
