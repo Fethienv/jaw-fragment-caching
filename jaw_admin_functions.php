@@ -125,7 +125,7 @@ function fragment_caching_options() {
     $POST_JAW_SPECIFIC_3 = intval($_POST['JAW_SPECIFIC_3']);
 
     $status = jaw_update_options(['option_value' => $post_status], ['option_name' => 'status']);
-    $JAW_RARLY = jaw_update_options(['option_value' => $POST_JAW_RARLY], ['option_name' => '$JAW_RARLY']);
+    $JAW_RARLY = jaw_update_options(['option_value' => $POST_JAW_RARLY], ['option_name' => 'JAW_RARLY']);
     $JAW_SPECIFIC_1 = jaw_update_options(['option_value' => $POST_JAW_SPECIFIC_1], ['option_name' => 'JAW_SPECIFIC_1']);
     $JAW_SPECIFIC_2 = jaw_update_options(['option_value' => $POST_JAW_SPECIFIC_2], ['option_name' => 'JAW_SPECIFIC_2']);
     $JAW_SPECIFIC_3 = jaw_update_options(['option_value' => $POST_JAW_SPECIFIC_3], ['option_name' => 'JAW_SPECIFIC_3']);
