@@ -28,10 +28,6 @@ if (!defined('JAW_TOKEN'))
 if (!defined('JAW_TEXT_DOMAIN'))
     exit;
 
+include 'plugin_registeration.php';
 include 'jaw_core_functions.php';
-        
-// Activation Hooks
-// register_activation_hook(__FILE__, array('JAWC', 'activate_jawc'));
-// Deactivation Hooks
-// register_deactivation_hook(__FILE__, array('JAWC', 'deactivate_jawc'));
-   
+include 'jaw_admin_functions.php';
