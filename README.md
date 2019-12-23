@@ -53,9 +53,8 @@ function get_template( $template_path, $template_name, $cached = true ) {
 
 ```
 ## Next update:
-- control fragments form wordpress dashbord
+- Control fragments form wordpress dashbord
   * Delete fragments
   * Set or update fragment expiration times
-- delete fragments when update post, menu, widgets ..etc.
-- Cleanup all fragment caches
- 
+  * Cleanup all fragment caches
+- Delete fragments when update post, menu, widgets ..etc.
