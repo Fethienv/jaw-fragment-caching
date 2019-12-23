@@ -73,6 +73,5 @@ And you can use Wordpress Trensient API constants
 ## Next update:
 - Control fragments form wordpress dashbord
   * Delete fragments
-  * Set or update fragment expiration times
   * Cleanup all fragment caches
 - Delete fragments when update post, menu, widgets ..etc.
