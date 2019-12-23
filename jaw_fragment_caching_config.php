@@ -23,14 +23,14 @@ if (!defined('JAW_Dependencies') || !JAW_Dependencies) {
 define('FRAGMENT_DIR', ABSPATH . 'wp-content/cache/jawc-fragments-caching/');
 
 define('FRAGMENT_CACHING_DATA_EXPIRATION', FALSE);
-define('FRAGMENT_DURATION', TRUE);
-
+define('FRAGMENT_DURATION', FALSE);
 
 /// EXPIRATION table
-$EXPIRATION_table = array(
-    'memberships_1' => MONTH_IN_SECONDS,
-    'memberships_2' => MONTH_IN_SECONDS,
-    'memberships_3' => MONTH_IN_SECONDS,
-    'footer_1' => MONTH_IN_SECONDS
-);
+$EXPIRATION_constants = array(
+                               'JAW_RARLY'         => 120,  // get duration from data base
+                               'JAW_PERSISTANT'    => 0,
+                               'JAW_SPECIFIC_1'    => MONTH_IN_SECONDS,  // get duration from data base
+                               'JAW_SPECIFIC_1'    => MONTH_IN_SECONDS,  // get duration from data base
+                               'JAW_SPECIFIC_3'    => MONTH_IN_SECONDS   // get duration from data base
+                             );
 
