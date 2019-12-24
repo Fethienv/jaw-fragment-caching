@@ -21,13 +21,14 @@ if (!defined('JAW_Dependencies') || !JAW_Dependencies) {
     define('FRAGMENT_CACHING_STATUS', $CNF_STATUS); // repaire this
 }
 
-define('FRAGMENT_DIR', ABSPATH . 'wp-content/cache/jawc-fragments-caching/');
-
 define('FRAGMENT_CACHING_DATA_EXPIRATION', FALSE);
-define('FRAGMENT_DURATION', FALSE);
 
-$unique_sufix = "azerty"; // used for security
+// used for security
+$unique_sufix = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "unique_sufix"');
+define('FRAGMENT_DIR', ABSPATH . 'wp-content/cache/jawc-fragments-caching_'.$unique_sufix.'/');
 
+$FRAGMENT_DURATION = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "FRAGMENT_DURATION"');
+define('FRAGMENT_DURATION', $FRAGMENT_DURATION);
 
 /// EXPIRATION table
 $EXPIRATION_constants = array(
