@@ -15,7 +15,7 @@ function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT",$unique
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
             $message = 'Execution GET time = ' . $execution_time;
-            register_in_log($message, $section . "_" . $refrence, true);
+            register_in_log($message, $section . "_" . $refrence);
         }
         return $load_fragment_cache;
     }
@@ -37,7 +37,7 @@ function jaw_set_cache_part($section, $refrence, $exp = "JAW_PERSISTANT",$unique
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
             $message = 'Execution SET time = ' . $execution_time;
-            register_in_log($message, $section . "_" . $refrence, true);
+            register_in_log($message, $section . "_" . $refrence);
         }
         return $create_fragment_cache;
     }
@@ -88,6 +88,11 @@ function jaw_create_fragment_cache($section, $refrence, $exp = "",$unique = fals
     $content = '<?php if ( ! defined( "ABSPATH" ) ) exit;?>';
     $fragment_cache_page_dir = FRAGMENT_DIR . $wp_query->post->ID . '/';
     $fragment_cache_section_dir = $fragment_cache_page_dir . $section . '/';
+    
+    if (!is_dir(FRAGMENT_DIR)) {
+        mkdir(FRAGMENT_DIR);
+    }
+    
     if (!is_dir($fragment_cache_page_dir)) {
         mkdir($fragment_cache_page_dir);
     }
@@ -182,8 +187,8 @@ function jaw_fragment_cache_file_name($section, $refrence) {
  * 
  * Filter content and replace image urls.
  */
-function register_in_log($message, $log_file = "", $log_enabler = false) {
-    if ($log_enabler) {
+function register_in_log($message, $log_file = "") {
+    if (FRAGMENT_DURATION) {
         $suffix = date("Y-m-d");
         $log_path = FRAGMENT_DIR . 'logs/' . $suffix . '/';
 
