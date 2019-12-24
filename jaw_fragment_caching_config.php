@@ -26,6 +26,9 @@ define('FRAGMENT_DIR', ABSPATH . 'wp-content/cache/jawc-fragments-caching/');
 define('FRAGMENT_CACHING_DATA_EXPIRATION', FALSE);
 define('FRAGMENT_DURATION', FALSE);
 
+$unique_sufix = "azerty"; // used for security
+
+
 /// EXPIRATION table
 $EXPIRATION_constants = array(
                                'JAW_RARLY'         => $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "JAW_RARLY"'),  // get duration from data base
