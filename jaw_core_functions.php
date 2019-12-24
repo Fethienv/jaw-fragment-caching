@@ -5,12 +5,12 @@
  * 
  * Filter content and replace image urls.
  */
-function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT") {
+function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT",$unique = false) {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
         global $EXPIRATION_constants;
         $exp = $EXPIRATION_constants[$exp];
-        $load_fragment_cache = jaw_load_fragment_cache($section, $refrence, $exp);
+        $load_fragment_cache = jaw_load_fragment_cache($section, $refrence, $exp, $unique);
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -27,12 +27,12 @@ function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT") {
  * 
  * Filter content and replace image urls.
  */
-function jaw_set_cache_part($section, $refrence, $exp = "JAW_PERSISTANT") {
+function jaw_set_cache_part($section, $refrence, $exp = "JAW_PERSISTANT",$unique = false) {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
         global $EXPIRATION_constants;
         $exp = $EXPIRATION_constants[$exp];
-        $create_fragment_cache = jaw_create_fragment_cache($section, $refrence, $exp);
+        $create_fragment_cache = jaw_create_fragment_cache($section, $refrence, $exp,$unique);
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -78,9 +78,14 @@ function jaw_update_cache_part_expiration($device, $section, $refrence) {
  * 
  * Filter content and replace image urls.
  */
-function jaw_create_fragment_cache($section, $refrence, $exp = "") {
-    global $wp_query;
-    $content = "";
+function jaw_create_fragment_cache($section, $refrence, $exp = "",$unique = false) {
+    global $wp_query,$unique_sufix;
+    if(is_user_logged_in() && $unique){
+      $user = (current_user_can( 'manage_options' ))?"admin":"user"; 
+    }else{
+      $user = "visitor";  
+    }
+    $content = '<?php if ( ! defined( "ABSPATH" ) ) exit;?>';
     $fragment_cache_page_dir = FRAGMENT_DIR . $wp_query->post->ID . '/';
     $fragment_cache_section_dir = $fragment_cache_page_dir . $section . '/';
     if (!is_dir($fragment_cache_page_dir)) {
@@ -89,7 +94,7 @@ function jaw_create_fragment_cache($section, $refrence, $exp = "") {
     if (!is_dir($fragment_cache_section_dir)) {
         mkdir($fragment_cache_section_dir);
     }
-    $fragment_cache_file = $fragment_cache_section_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '.html';
+    $fragment_cache_file = $fragment_cache_section_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_'.$user.'_'.$unique_sufix . '.php';
 
     if (!file_exists($fragment_cache_file)) {
         $content = ob_get_clean();
@@ -115,10 +120,15 @@ function jaw_remove_fragment_cache($fragment_cache_file) {
  * 
  * $fragment_cache_file path of cache part
  */
-function jaw_load_fragment_cache($section, $refrence, $exp = "") {
-    global $wp_query;
+function jaw_load_fragment_cache($section, $refrence, $exp = "",$unique = false) {
+    global $wp_query,$unique_sufix;
+    if(is_user_logged_in() && $unique){
+      $user = (current_user_can( 'manage_options' ))?"admin":"user"; 
+    }else{
+      $user = "visitor";  
+    }
     $fragment_cache_dir = FRAGMENT_DIR . $wp_query->post->ID . '/' . $section . '/';
-    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '.html';
+    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_'.$user.'_'.$unique_sufix.'.php';
     if (file_exists($fragment_cache_file)) {
         $last_change = filectime($fragment_cache_file);
         $duration = time() - $last_change; 
