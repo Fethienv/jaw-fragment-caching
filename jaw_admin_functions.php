@@ -49,8 +49,10 @@ function jaw_admin_ctrl_fragment_caching() {
                 . '<th scope="col" id="ready_urls_id" class="manage-column column-ready_urls_id column-primary sortable desc">'
                 . '<a href="https://www.jawlatte.com/wp-admin/admin.php?page=jawc_admin_ctrl_cache&amp;jawc_page=main&amp;tab=queue&amp;orderby=ready_urls_id&amp;order=asc"><span>#</span><span class="sorting-indicator"></span></a>'
                 . '</th>'
-                . '<th scope="col" id="ready_urls" class="manage-column column-ready_urls">Transient name</th>'
-                . '<th scope="col" id="ready_time" class="manage-column column-ready_time">Action</th>'
+                . '<th scope="col" id="pages_ids" class="manage-column column-pages_ids">Pages ids</th>'
+                . '<th scope="col" id="sections" class="manage-column column-sections">Sections</th>' 
+                . '<th scope="col" id="fragments_files" class="manage-column column-fragments_files">Fragments files</th>'
+                . '<th scope="col" id="actions" class="manage-column column-actions">Actions</th>'
                 . '</tr>'
                 . '</thead>'
                 . '<tbody id="the-list">';
@@ -92,8 +94,10 @@ function jaw_admin_ctrl_fragment_caching() {
                 echo '</tbody><tfoot><tr>'
                 . '<th scope="col" id="ready_urls_id" class="manage-column column-ready_urls_id column-primary sortable desc">'
                 . '<a href="https://www.jawlatte.com/wp-admin/admin.php?page=jawc_admin_ctrl_cache&amp;jawc_page=main&amp;tab=queue&amp;orderby=ready_urls_id&amp;order=asc"><span>#</span><span class="sorting-indicator"></span></a></th>'
-                . '<th scope="col" id="ready_urls" class="manage-column column-ready_urls">Transient name</th>'
-                . '<th scope="col" id="ready_time" class="manage-column column-ready_time">Action</th>'
+                . '<th scope="col" id="pages_ids" class="manage-column column-pages_ids">Pages ids</th>'
+                . '<th scope="col" id="sections" class="manage-column column-sections">Sections</th>' 
+                . '<th scope="col" id="fragments_files" class="manage-column column-fragments_files">Fragments files</th>'
+                . '<th scope="col" id="actions" class="manage-column column-actions">Actions</th>'
                 . '</tr>'
                 . '</tfoot></table> </div>';
             } // end if/else
@@ -110,31 +114,38 @@ function jaw_admin_ctrl_fragment_caching() {
 function fragment_caching_options() {
 
 
-    if (!isset($_POST['JAW_RARLY']) || empty($_POST['JAW_RARLY'])           ||
+    if (!isset($_POST['JAW_RARLY'])      || empty($_POST['JAW_RARLY'])      ||
         !isset($_POST['JAW_SPECIFIC_1']) || empty($_POST['JAW_SPECIFIC_1']) ||
         !isset($_POST['JAW_SPECIFIC_2']) || empty($_POST['JAW_SPECIFIC_2']) ||
-        !isset($_POST['JAW_SPECIFIC_3']) || empty($_POST['JAW_SPECIFIC_3'])) {
+        !isset($_POST['JAW_SPECIFIC_3']) || empty($_POST['JAW_SPECIFIC_3']) ||    
+        !isset($_POST['unique_sufix'])   || empty($_POST['unique_sufix'])   ){
         return 'There is an error';
     }
 
-    $post_status = (isset($_POST['fragments_caching_status'])) ? intval($_POST['fragments_caching_status']) : 0;
+    $post_status       = (isset($_POST['fragments_caching_status'])) ? intval($_POST['fragments_caching_status']) : 0;
+    $post_duration_log = (isset($_POST['fragments_duration_log'])) ? intval($_POST['fragments_duration_log']) : 0;
     
     $POST_JAW_RARLY      = intval($_POST['JAW_RARLY']);
     $POST_JAW_SPECIFIC_1 = intval($_POST['JAW_SPECIFIC_1']);
     $POST_JAW_SPECIFIC_2 = intval($_POST['JAW_SPECIFIC_2']);
     $POST_JAW_SPECIFIC_3 = intval($_POST['JAW_SPECIFIC_3']);
+    $POST_unique_sufix   = $_POST['unique_sufix'];
 
-    $status = jaw_update_options(['option_value' => $post_status], ['option_name' => 'status']);
-    $JAW_RARLY = jaw_update_options(['option_value' => $POST_JAW_RARLY], ['option_name' => 'JAW_RARLY']);
+    $status         = jaw_update_options(['option_value' => $post_status],         ['option_name' => 'status']);
+    $duration_log   = jaw_update_options(['option_value' => $post_duration_log],   ['option_name' => 'FRAGMENT_DURATION']);
+    $JAW_RARLY      = jaw_update_options(['option_value' => $POST_JAW_RARLY],      ['option_name' => 'JAW_RARLY']);
     $JAW_SPECIFIC_1 = jaw_update_options(['option_value' => $POST_JAW_SPECIFIC_1], ['option_name' => 'JAW_SPECIFIC_1']);
     $JAW_SPECIFIC_2 = jaw_update_options(['option_value' => $POST_JAW_SPECIFIC_2], ['option_name' => 'JAW_SPECIFIC_2']);
     $JAW_SPECIFIC_3 = jaw_update_options(['option_value' => $POST_JAW_SPECIFIC_3], ['option_name' => 'JAW_SPECIFIC_3']);
+    $unique_sufix   = jaw_update_options(['option_value' => $POST_unique_sufix],   ['option_name' => 'unique_sufix']);
 
-    if (false === $status ||
-            false === $JAW_RARLY ||
+    if (false === $status             ||
+            false === $duration_log   ||
+            false === $JAW_RARLY      ||
             false === $JAW_SPECIFIC_1 ||
             false === $JAW_SPECIFIC_2 ||
-            false === $JAW_SPECIFIC_3) {
+            false === $JAW_SPECIFIC_3 ||
+            false === $unique_sufix   ){
         return "There was an error.";
     } else {
         return " Options updates.";
@@ -185,7 +196,7 @@ function cache_options_text_field($args) {
 
 function cache_options_checkbox_field($args) {
     global $wpdb, $table_prefix;
-    $checked = $wpdb->get_var('SELECT DISTINCT option_value FROM ' . $table_prefix . 'fragment_caching WHERE option_name = "status"');
+    $checked = $wpdb->get_var('SELECT DISTINCT option_value FROM ' . $table_prefix . 'fragment_caching WHERE option_name = "' . esc_attr($args['checked']) . '"');
 
     $html = "<input type='checkbox' id='" . esc_attr($args['label_for']) . "' name='" . esc_attr($args['name']) . "' value='1' " . checked(1, $checked, false) . " />";
     $html .= "<label for='" . esc_attr($args['label_for']) . "'>" . esc_attr($args['label']) . "</label>";
@@ -207,7 +218,7 @@ function register_fragments_caching_fields() {
 
     add_settings_field(
             'fragments_caching_status',
-            'Clean cache for users ',
+            'fragments caching status',
             'cache_options_checkbox_field',
             'fragments_caching_group',
             'fragments_caching_section',
@@ -215,6 +226,31 @@ function register_fragments_caching_fields() {
                 'label_for' => 'fragments_caching_status',
                 'name' => 'fragments_caching_status',
                 'label' => 'Check for enable',
+                'checked' => 'status'
+    ]);
+    
+    add_settings_field(
+            'fragments_caching_duration_log',
+            'fragments caching duration log',
+            'cache_options_checkbox_field',
+            'fragments_caching_group',
+            'fragments_caching_section',
+            [
+                'label_for' => 'fragments_duration_log',
+                'name' => 'fragments_duration_log',
+                'label' => 'fragments_duration_log',
+                'checked' => 'FRAGMENT_DURATION'
+    ]);
+    
+    add_settings_field(
+            'fragments_caching_unique_sufix',
+            'Unique suffix',
+            'cache_options_text_field',
+            'fragments_caching_group',
+            'fragments_caching_section',
+            [
+                'label_for' => 'unique_sufix',
+                'name' => 'unique_sufix',
     ]);
 
     add_settings_field(
