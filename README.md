@@ -86,8 +86,13 @@ And you can use Wordpress Trensient API constants
 |  6   | unique_sufix      | cq0ZvzyfBTTGWbTW  |
 |  7   | FRAGMENT_DURATION | 0                 |
 
+## Cache files:
+
+/path/to/your/wp-content/jawc-fragments-caching_{unique_sufix}/{postid}/{section_name}/fragment_cache_{device}_{section_name}_{Refernce_in_section}_{expiration}_{user_type}_{unique_sufix}.php
+
 ## Next update:
 - Control fragments form wordpress dashbord
   * Delete fragments
   * Cleanup all fragment caches
 - Delete fragments when update post, menu, widgets ..etc.
+- Add gzip.
