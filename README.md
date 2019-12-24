@@ -71,6 +71,18 @@ Note: those parametres must be the same in jaw_get_cache_part and jaw_set_cache_
 
 And you can use Wordpress Trensient API constants
 
+## Database Table:
+
+* Table name = {$table_prefix}fragment_caching
+* Default content:
+1	status	          1	
+2	JAW_RARLY	          1209600	
+3	JAW_SPECIFIC_1	     43200	
+4	JAW_SPECIFIC_2	     86400	
+5	JAW_SPECIFIC_3	     604800	
+6	unique_sufix	     azerty	
+7	FRAGMENT_DURATION	0
+
 ## Next update:
 - Control fragments form wordpress dashbord
   * Delete fragments
