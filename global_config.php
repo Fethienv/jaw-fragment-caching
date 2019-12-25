@@ -6,12 +6,8 @@
  * and open the template in the editor.
  */
 
-
-$unique_sufix         = "azerty";
 $jaw_fragments_apikey = "54309511-0371-4db2-99b3-5e2967302af3";
 $FRAGMENT_DIR         = 'wp-content/cache/';
-$wordpress_root       = ''; // empty => in root, folder name if it not in root
-
 
 //Security options
 $allow_delete = true; // Set to false to disable delete button and delete POST request.
