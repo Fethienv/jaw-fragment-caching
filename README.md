@@ -1,7 +1,17 @@
 # jaw-fragment-caching
 
+Simple fragment caching wordpress plugin to use in themes or plugin creation
+
 ##### Table of Contents  
 [Introduction](#Introduction)  
+[Pictures](#Pictures) 
+[How use it?](#How use it?) 
+[Method 1: Direct](##Method 1: Direct) 
+[Method 1: Indirect](##Method 1: Indirect) 
+[Parametres:](#Parametres) 
+[Expiration constants:](#Expiration constants) 
+[Cache files](#Cache files) 
+[Next updates:](#Next updates:) 
 
 ## Introduction:
 Simple fragment caching wordpress plugin
@@ -12,7 +22,7 @@ Simple fragment caching wordpress plugin
 ![Image of Show Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/show%20cache%20files.PNG?raw=true)
 ![Image of delete Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/cache%20files%20deleted.PNG?raw=true)
 
-## How use it
+## How use it?
 ### Method 1: Direct
 ```
 
@@ -100,7 +110,7 @@ Or you can use Wordpress Trensient API constants, or duration in seconds
 
 /path/to/your/wp-content/cache/jawc-fragments-caching_{unique_sufix}/{postid}/{section_name}/fragment_cache_ {device} _ {section_name}_ {Refernce_in_section} _ {expiration} _ {user_type} _ {unique_sufix} .php
 
-## Next update:
+## Next updates:
 - Control fragments form wordpress dashbord.
   * Cleanup all fragment caches.
 - Delete fragments when update post, menu, widgets ..etc.
