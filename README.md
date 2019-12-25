@@ -28,6 +28,7 @@ Simple fragment caching wordpress plugin
 - can control expiration time
 - can preload fragments.
 - Update fragments when post, widget, menu ... etc updated.
+
 ... and more
 
 
