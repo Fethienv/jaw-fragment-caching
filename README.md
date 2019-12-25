@@ -7,11 +7,11 @@
 - [How use it?](#how-use-it) 
    * [Method 1: Direct](#method-1-direct) 
    * [Method 2: Indirect](#method-2-indirect) 
-- [Parametres:](#parametres) 
-- [Expiration constants:](#expiration-constants) 
-- [Database table:](#database-table) 
+- [Parametres](#parametres) 
+- [Expiration constants](#expiration-constants) 
+- [Database table](#database-table) 
 - [Cache files](#cache-files) 
-- [Next updates:](#next-updates) 
+- [Next updates](#next-updates) 
 
 ## Introduction:
 Simple fragment caching wordpress plugin
