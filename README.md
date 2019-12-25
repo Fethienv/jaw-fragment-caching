@@ -2,6 +2,10 @@
 ## Description:
 Simple fragment caching wordpress plugin
 
+## Pictures:
+![Image of Option](https://github.com/Fethienv/jaw-fragment-caching/blob/master/options.PNG?raw=true)
+![Image of Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/fragments.PNG?raw=true)
+
 ## How use it
 ### Method 1: Direct
 ```
