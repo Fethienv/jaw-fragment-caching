@@ -65,7 +65,7 @@ function get_template( $template_path, $template_name, $cached = true ) {
 * Expiration_constant: must be one of plugin Expiration constants or Trensient API constants
 * unique_cache: true or false to get 3 types of unique cache "admins, users and visitors"
 
-Note: those parametres must be the same in jaw_get_cache_part and jaw_set_cache_part for each section and referce
+**Note:** those parametres must be the same in jaw_get_cache_part and jaw_set_cache_part for each section and referce
 
 ## Expiration constants:
 
@@ -75,7 +75,7 @@ Note: those parametres must be the same in jaw_get_cache_part and jaw_set_cache_
 - JAW_SPECIFIC_1:  value controllable form admin dashboard
 - JAW_SPECIFIC_3:  value controllable form admin dashboard
 
-And you can use Wordpress Trensient API constants
+Or you can use Wordpress Trensient API constants, or duration in seconds 
 
 ## Database Table:
 
