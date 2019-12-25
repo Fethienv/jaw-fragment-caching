@@ -36,8 +36,6 @@ define('FRAGMENT_DIR', ABSPATH . $FRAGMENT_DIR.'jawc-fragments-caching_'.$unique
 $FRAGMENT_DURATION = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "FRAGMENT_DURATION"');
 define('FRAGMENT_DURATION', $FRAGMENT_DURATION);
 
-//$jaw_fragments_apikey = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "jaw_fragments_apikey"');
-
 /// EXPIRATION table
 $EXPIRATION_constants = array(
                                'JAW_RARLY'         => $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "JAW_RARLY"'),  // get duration from data base
