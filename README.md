@@ -3,16 +3,16 @@
 Simple fragment caching wordpress plugin to use in themes or plugin creation
 
 ##### Table of Contents  
--[Introduction](#Introduction:)  
--[Pictures](#pictures) 
--[How use it?](#how-use-it) 
-*[Method 1: Direct](#method-1-direct) 
-*[Method 2: Indirect](#method-2-indirect) 
--[Parametres:](#parametres) 
--[Expiration constants:](#expiration-constants) 
--[Database table:](#database-table) 
--[Cache files](#cache-files) 
--[Next updates:](#next-updates) 
+- [Introduction](#introduction)  
+- [Pictures](#pictures) 
+- [How use it?](#how-use-it) 
+* [Method 1: Direct](#method-1-direct) 
+* [Method 2: Indirect](#method-2-indirect) 
+- [Parametres:](#parametres) 
+- [Expiration constants:](#expiration-constants) 
+- [Database table:](#database-table) 
+- [Cache files](#cache-files) 
+- [Next updates:](#next-updates) 
 
 ## Introduction:
 Simple fragment caching wordpress plugin
