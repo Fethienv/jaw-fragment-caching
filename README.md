@@ -25,8 +25,8 @@ Simple fragment caching wordpress plugin
 - Seperate fragments by post id,
 - Can clean up all fragments.
 - Can clean only one, or more fragments.
-- can control expiration time
-- can preload fragments.
+- Can control expiration time
+- Can preload fragments.
 - Update fragments when post, widget, menu ... etc updated.
 
 ... and more
