@@ -67,7 +67,7 @@ function jaw_admin_ctrl_fragment_caching_main() {
         settings_fields('fragments_caching_group');
         do_settings_sections('fragments_caching_group');
     } elseif ($active_tab == 'fragments') {
-        include_once 'addons/file-manager/file-manager.php';
+        include_once 'addons/filemanager/file-manager.php';
     }
 }
 
