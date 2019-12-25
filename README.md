@@ -1,9 +1,8 @@
 # jaw-fragment-caching
 
-Simple fragment caching wordpress plugin to use in themes or plugin creation
-
 ##### Table of Contents  
 - [Introduction](#introduction)  
+- [Features](#features)  
 - [Pictures](#pictures) 
 - [How use it?](#how-use-it) 
    * [Method 1: Direct](#method-1-direct) 
@@ -16,6 +15,21 @@ Simple fragment caching wordpress plugin to use in themes or plugin creation
 
 ## Introduction:
 Simple fragment caching wordpress plugin
+- To use it in themes, plugins creation
+- For speed up your themes or plugins
+- Reduce server load
+
+## Features:
+- Seperate fragments by users role: admin, users & visitors.
+- Seperate fragments by device: mobile, pc.
+- Seperate fragments by post id,
+- Can clean up all fragments.
+- Can clean only one, or more fragments.
+- can control expiration time
+- can preload fragments.
+- Update fragments when post, widget, menu ... etc updated.
+... and more
+
 
 ## Pictures:
 ![Image of Option](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/options.PNG?raw=true)
