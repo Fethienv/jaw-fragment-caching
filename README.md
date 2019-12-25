@@ -14,7 +14,7 @@
 - [Next updates](#next-updates) 
 
 ## Introduction:
-Simple fragment caching wordpress plugin
+Simple fragment caching wordpress plugin for developers
 - To use it in themes, plugins creation
 - For speed up your themes or plugins
 - Reduce server load
@@ -30,7 +30,6 @@ Simple fragment caching wordpress plugin
 - Update fragments when post, widget, menu ... etc updated.
 
 ... and more
-
 
 ## Pictures:
 ![Image of Option](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/options.PNG?raw=true)
