@@ -3,15 +3,16 @@
 Simple fragment caching wordpress plugin to use in themes or plugin creation
 
 ##### Table of Contents  
-[Introduction](#Introduction)  
-[Pictures](#Pictures) 
-[How use it?](#How use it?) 
-[Method 1: Direct](##Method 1: Direct) 
-[Method 1: Indirect](##Method 1: Indirect) 
-[Parametres:](#Parametres) 
-[Expiration constants:](#Expiration constants) 
-[Cache files](#Cache files) 
-[Next updates:](#Next updates:) 
+[Introduction](## Introduction:)  
+[Pictures](## Pictures:) 
+[How use it?](## How use it?) 
+[Method 1: Direct](### Method 1: Direct) 
+[Method 2: Indirect](### Method 2: Indirect) 
+[Parametres:](## Parametres:) 
+[Expiration constants:](## Expiration constants:) 
+[Expiration constants:](## Database Table:) 
+[Cache files](## Cache files:) 
+[Next updates:]## Next updates:) 
 
 ## Introduction:
 Simple fragment caching wordpress plugin
@@ -35,7 +36,7 @@ if (!jaw_get_cache_part('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',t
 }
 
 ```
-### Method 1: Indirect
+### Method 2: Indirect
 ```
 
 function get_template( $template_path, $template_name, $cached = true ) {
