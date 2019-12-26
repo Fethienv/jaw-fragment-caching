@@ -35,29 +35,36 @@ global $jaw_fragments_apikey, $allow_delete,
     </div>
 </div>
 <div id="top">
-    <?php if ($allow_create_folder): ?>
-        <form action="?" method="post" id="mkdir" />
-        <label for=dirname>Create New Folder</label><input id=dirname type=text name=name value="" />
-        <input type="submit" value="create" />
-    </form>
-
-<?php endif; ?>
-
-<?php if ($allow_upload): ?>
-
-    <div id="file_drop_target">
-        Drag Files Here To Upload
-        <b>or</b>
-        <input type="file" multiple />
-    </div>
-<?php endif; ?>
-</div>   
-<div id="upload_progress"></div>
 <div id="breadcrumb">
     <span>Path:</span>
     <ul class="breadcrumb">
     </ul>
-</div>   
+</div>  
+</div> 
+<div id="top">
+   <?php if ($allow_create_folder || $allow_upload): ?> <div id="action_bar"><?php endif; ?>
+    <?php if ($allow_create_folder): ?>
+        <div id="create_folder">
+            <div id="create_folder_target">
+            <label id="create_folder_label" for="dirname">Create New Folder</label>
+            <input id="dirname" type="text" name="name" value="" />
+            <input type="button" id="create_dirname" value="create" />
+            </div>
+            
+        </div>
+    <?php endif; ?>
+    <?php if ($allow_upload): ?>
+        <div id="upload_files">
+            <div id="upload_progress"></div>
+            <div id="file_drop_target">
+                Drag Files Here To Upload
+                <b>or</b>
+                <input type="file" multiple />
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php if ($allow_create_folder || $allow_upload): ?></div><?php endif; ?>
+</div> 
 <table id="jawc_table"><thead><tr>
             <th>Name</th>
             <th>Size</th>
