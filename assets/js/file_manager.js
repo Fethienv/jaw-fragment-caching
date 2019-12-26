@@ -66,6 +66,12 @@ jQuery((function ($) {
                 message_box.empty();
                 message_box.append('<p>Ready!</p>');
             });
+            $('a[id^=breadcrumb_dir_]').on("click", function () {
+                var open_path = $(this).attr("data-open-path");
+                open_dir(open_path);
+                message_box.empty();
+                message_box.append('<p>Ready!</p>');
+            });
             $('a[id^=delete_fragment_]').on("click", function () {
                 var open_path = $(this).attr("data-parent-path");
                 var delete_path = $(this).attr("data-delete-path");
@@ -91,6 +97,17 @@ jQuery((function ($) {
             className: 'paginationjs-theme-blue paginationjs-big',
             callback: function (data, pagination) {
                 tbody.html(data);
+                $('a[id^=open_fragment_dir_]').on("click", function () {
+                var open_path = $(this).attr("data-open-path");
+                open_dir(open_path);
+                message_box.empty();
+                message_box.append('<p>Ready!</p>');
+            });
+            $('a[id^=delete_fragment_]').on("click", function () {
+                var open_path = $(this).attr("data-parent-path");
+                var delete_path = $(this).attr("data-delete-path");
+                delete_file_or_dir(delete_path, open_path);
+            });
             }
         });
     }
@@ -174,7 +191,7 @@ jQuery((function ($) {
             if (v) {
                 var v_as_text = decodeURIComponent(v);
                 current_path += v_as_text + "/";
-                breadcrumb.append('<li><a id="open_fragment_dir_' + v_as_text + '" data-open-path="' + current_path + '" >' + v_as_text + '</a></li>');
+                breadcrumb.append('<li><a id="breadcrumb_dir_' + v_as_text + '" data-open-path="' + current_path + '" >' + v_as_text + '</a></li>');
             }
         });
     }
