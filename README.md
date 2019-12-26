@@ -5,13 +5,13 @@
 - [Features](#features)  
 - [Pictures](#pictures) 
 - [How use it?](#how-use-it) 
-   * [Cache creation](#method-1-direct) 
-         - [Method 1: Direct](#method-1-direct) 
-         - [Method 2: Indirect](#method-2-indirect) 
-   * [Cache cleanup](#method-1-direct) 
-         - [Manual](#method-1-direct) 
-         - [Using hooks](#method-2-indirect) 
-         - [Using functions](#method-2-indirect) 
+   * [Cache creation](#cache-creation) 
+        - [Method 1: Direct](#method-1-direct) 
+        - [Method 2: Indirect](#method-2-indirect) 
+   * [Cache cleanup](#cache-cleanup) 
+        - [Manual](#manual) 
+        - [Using hooks](#using-hooks) 
+        - [Using functions](#using-functions) 
 - [Parametres](#parametres) 
 - [Expiration constants](#expiration-constants) 
 - [Database table](#database-table) 
@@ -43,7 +43,8 @@ Simple fragment caching wordpress plugin for developers
 ![Image of delete Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/cache%20files%20deleted.PNG?raw=true)
 
 ## How use it?
-### Method 1: Direct
+### Cache creation
+#### Method 1: Direct
 ```
 
 if (!jaw_get_cache_part('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true)) {
@@ -55,7 +56,7 @@ if (!jaw_get_cache_part('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',t
 }
 
 ```
-### Method 2: Indirect
+#### Method 2: Indirect
 ```
 
 function get_template( $template_path, $template_name, $cached = true ) {
@@ -92,6 +93,11 @@ function get_template( $template_path, $template_name, $cached = true ) {
 }
 
 ```
+### Cache cleanup
+#### Manual
+#### Using hooks
+#### Using functions
+
 ## Parametres:
 
 * Section_name: optional name
