@@ -7,7 +7,7 @@ jQuery((function ($) {
     var tbody = $('#list');
     var lds_spiner = $('#lds-spiner');
     var message_box = $('#jaw_message');
-
+    let this_rows = [];
 
     $(document).ready(function () {
         open_dir(fragment_path);
@@ -18,28 +18,76 @@ jQuery((function ($) {
             message_box.empty();
             message_box.append('<p>Ready!</p>');
         });
-        
+
         table_search();
 
     });
 
     function delete_file_or_dir(delete_this_path, open_path) {
-        tbody.empty();
+        var r = confirm("Are you sure? did you want to delete " + delete_this_path);
+        if (r == true) {
+            tbody.empty();
+            var data = {apikey: api_key,
+                delete_path: delete_this_path,
+                action: "delete"
+            };
+            var html = "";
+            var file_list = send_data(req_url, data);
+            file_list.done(function (recived_data) {
+                $.each(recived_data.results, function (k, v) {
+                    html += '<p>' + v.removed_path + ' ' + (v.result ? 'deleted' : 'not deleted') + '</p>';
+                });
+                open_dir(open_path);
+                message_box.empty(); 
+                message_box.append(html);
+            });
+        } else {
+           if (message_box.hasClass("jaw_error")) {
+                message_box.removeClass("jaw_error");
+            }
+            if (message_box.hasClass("jaw_success")) {
+                message_box.removeClass("jaw_success");
+            }
+            message_box.addClass("jaw_init"); 
+           message_box.empty(); 
+           message_box.append('<p>Delete action cancled</p>');
+        }
+    }
+
+    function download_file(download_this_file) {
         var data = {apikey: api_key,
-            delete_path: delete_this_path,
-            action: "delete"
+            download_path: download_this_file,
+            action: "download"
         };
-        var html = "";
         var file_list = send_data(req_url, data);
         file_list.done(function (recived_data) {
-            $.each(recived_data.results, function (k, v) {
-                html += '<p>' + v.removed_path + ' ' + (v.result ? 'deleted' : 'not deleted') + '</p>';
-            });
-            open_dir(open_path);
             message_box.empty();
-            message_box.append(html);
+            message_box.append('<p>Dowloading is starting</p>');
         });
+    }
+ 
+    function upload_file(download_this_file) {
+        var data = {apikey: api_key,
+            download_path: download_this_file,
+            action: "download"
+        };
+        var file_list = send_data(req_url, data);
+        file_list.done(function (recived_data) { 
+            message_box.empty();
+            message_box.append('<p>Dowloading is starting</p>');
+        });
+    }
 
+    function create_folder(download_this_file) {
+        var data = {apikey: api_key,
+            download_path: download_this_file,
+            action: "download"
+        };
+        var file_list = send_data(req_url, data);
+        file_list.done(function (recived_data) {
+            message_box.empty();
+            message_box.append('<p>Dowloading of ' + recived_data.download_path + ' is startion</p>');
+        });
     }
 
     function open_dir(open_this_path) {
@@ -72,22 +120,31 @@ jQuery((function ($) {
                 message_box.empty();
                 message_box.append('<p>Ready!</p>');
             });
+            $('a[id^=download_fragment_]').on("click", function () {
+                var download_path = $(this).attr("data-download-path");
+                download_file(download_path);
+            });
             $('a[id^=delete_fragment_]').on("click", function () {
                 var open_path = $(this).attr("data-parent-path");
                 var delete_path = $(this).attr("data-delete-path");
                 delete_file_or_dir(delete_path, open_path);
             });
-            table_pagination();
+            this_rows = table_pagination(false);
         }).fail(function () {
-            //open_dir(fragment_path);
+            tbody.empty();
+            tbody.append('<tr><td class="empty" colspan=5>Please click Home in navbar to reload content</td></tr>');
         });
     }
 
-    function table_pagination() {
+    function table_pagination(this_rows) {
         let rows = [];
-        $('#jawc_table #list tr').each(function (i, row) {
-            return rows.push(row);
-        });
+        if (this_rows) {
+            rows = this_rows;
+        } else {
+            $('#jawc_table #list tr').each(function (i, row) {
+                rows.push(row);
+            });
+        }
 
         $('#pagination').pagination({
             dataSource: rows,
@@ -98,26 +155,46 @@ jQuery((function ($) {
             callback: function (data, pagination) {
                 tbody.html(data);
                 $('a[id^=open_fragment_dir_]').on("click", function () {
-                var open_path = $(this).attr("data-open-path");
-                open_dir(open_path);
-                message_box.empty();
-                message_box.append('<p>Ready!</p>');
-            });
-            $('a[id^=delete_fragment_]').on("click", function () {
-                var open_path = $(this).attr("data-parent-path");
-                var delete_path = $(this).attr("data-delete-path");
-                delete_file_or_dir(delete_path, open_path);
-            });
+                    var open_path = $(this).attr("data-open-path");
+                    open_dir(open_path);
+                    message_box.empty();
+                    message_box.append('<p>Ready!</p>');
+                });
+                $('a[id^=download_fragment_]').on("click", function () {
+                    var download_path = $(this).attr("data-download-path");
+                    download_file(download_path);
+                });
+                $('a[id^=delete_fragment_]').on("click", function () {
+                    var open_path = $(this).attr("data-parent-path");
+                    var delete_path = $(this).attr("data-delete-path");
+                    delete_file_or_dir(delete_path, open_path);
+                });
             }
         });
+        return rows;
     }
 
     function table_search() {
         $("#jaw_search").on("keyup", function () {
+            lds_spiner.show();
             var value = $(this).val().toLowerCase();
-            $("#jawc_table #list tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            var results = [];
+            tbody.empty();
+            $.each(this_rows, function (k, v) {
+                var str = v.outerHTML;
+                if (str.indexOf(value) >= 0) {
+                    tbody.append(v);
+                    results.push(k);
+                }
             });
+            if (results.length === 0) {
+                tbody.append('<tr><td class="empty" colspan=5>Value not found.</td></tr>');
+            }
+            if (value === "") {
+                tbody.empty();
+                this_rows = table_pagination(true);
+            }
+            lds_spiner.hide();
         });
     }
 
@@ -137,6 +214,7 @@ jQuery((function ($) {
         }).fail(function (error_data) {
             var resp_text = JSON.parse(error_data.responseText);
             alert('Error ' + resp_text.code + ':  ' + resp_text.msg);
+
             message_box.empty();
             if (message_box.hasClass("jaw_init")) {
                 message_box.removeClass("jaw_init");
@@ -146,7 +224,7 @@ jQuery((function ($) {
             }
             message_box.addClass("jaw_error");
             message_box.append('<p>Error ' + resp_text.code + ':  ' + resp_text.msg + '</p>');
-            tbody.append('<tr><td class="empty" colspan=5>Please click Home in navbar to reload content</td></tr>');
+
         }).always(function () {
             console.log('my_send_to_finish');
             lds_spiner.hide();
@@ -162,7 +240,7 @@ jQuery((function ($) {
         var allow_direct_link = req_allow_direct_link;
         if (!data.is_dir && !allow_direct_link)
             $link.css('pointer-events', 'none');
-        var $dl_link = $('<a id="delete_fragment_' + (data.is_dir ? 'dir_' : 'file_') + data.name + '"/>').attr('data-delete-path', data.path).attr('data-parent-path', data.parent_path)
+        var $dl_link = $('<a id="download_fragment_' + (data.is_dir ? 'dir_' : 'file_') + data.name + '"/>').attr('data-download-path', data.path)
                 .addClass('download').text('download');
         var $delete_link = $('<a id="delete_fragment_' + (data.is_dir ? 'dir_' : 'file_') + data.name + '"/>').attr('data-delete-path', data.path).attr('data-parent-path', data.parent_path).addClass('delete').text('delete');
         var perms = [];
