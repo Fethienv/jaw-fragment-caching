@@ -102,10 +102,10 @@ function get_template( $template_path, $template_name, $cached = true ) {
 #### Using functions
 
 ## Cleanup cases:
-####Full
+#### Full:
 
 ```
-switch_theme
+       switch_theme
        user_register
        profile_update
        deleted_user
@@ -125,7 +125,7 @@ switch_theme
        upgrader_process_complete
 ```
 
-####Partial
+#### Partial:
 
 ## Parametres:
 
