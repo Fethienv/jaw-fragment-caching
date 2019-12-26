@@ -11,7 +11,10 @@
    * [Cache cleanup](#cache-cleanup) 
         - [Manual](#manual) 
         - [Using hooks](#using-hooks) 
-        - [Using functions](#using-functions) 
+        - [Using functions](#using-functions)
+- [Cleanup cases](#cleanup-cases) 
+   * [Full](#full) 
+   * [Partial](#partial) 
 - [Parametres](#parametres) 
 - [Expiration constants](#expiration-constants) 
 - [Database table](#database-table) 
@@ -97,6 +100,32 @@ function get_template( $template_path, $template_name, $cached = true ) {
 #### Manual
 #### Using hooks
 #### Using functions
+
+## Cleanup cases:
+####Full
+
+```
+switch_theme
+       user_register
+       profile_update
+       deleted_user
+       wp_update_nav_menu
+       update_option_sidebars_widgets
+       update_option_category_base
+       update_option_tag_base
+       permalink_structure_changed
+       create_term
+       edited_terms'
+       delete_term
+       add_link
+       edit_link
+       delete_link
+       customize_save
+       update_option_theme_mods_' . get_option( 'stylesheet' )
+       upgrader_process_complete
+```
+
+####Partial
 
 ## Parametres:
 
