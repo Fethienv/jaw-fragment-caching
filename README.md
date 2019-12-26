@@ -15,6 +15,9 @@
 - [Cleanup cases](#cleanup-cases) 
    * [Full](#full) 
    * [Partial](#partial) 
+- [Hooks](#hooks) 
+   * [Actions](#actions) 
+   * [Filters](#filters)
 - [Parametres](#parametres) 
 - [Expiration constants](#expiration-constants) 
 - [Database table](#database-table) 
@@ -135,6 +138,11 @@ wp_update_comment_count
 pre_post_update
 ```
 Or whene you add a specific code 
+
+## Hooks:
+### Actions:
+
+### Filters:
 
 ## Parametres:
 
