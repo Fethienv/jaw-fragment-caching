@@ -124,8 +124,17 @@ function get_template( $template_path, $template_name, $cached = true ) {
        update_option_theme_mods_' . get_option( 'stylesheet' )
        upgrader_process_complete
 ```
+Or when change options, your specific code
 
 #### Partial:
+```
+wp_trash_post
+delete_post
+clean_post_cache
+wp_update_comment_count
+pre_post_update
+```
+Or whene you add a specific code 
 
 ## Parametres:
 
