@@ -4,6 +4,7 @@
 - [Introduction](#introduction)  
 - [Features](#features)  
 - [Pictures](#pictures) 
+- [Installation](#installation) 
 - [How use it?](#how-use-it) 
    * [Cache creation](#cache-creation) 
         - [Method 1: Direct](#method-1-direct) 
@@ -47,6 +48,13 @@ Simple fragment caching wordpress plugin for developers
 ![Image of Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/shows_fragments.PNG?raw=true)
 ![Image of Show Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/show_fragments_cache_files.PNG?raw=true)
 ![Image of delete Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/delete_fragments.PNG?raw=true)
+
+## Installation:
+Admin dashboard -> plugins -> add new  -> upload 
+
+## Configrations:
+* if you want change dirs: edit file general_config.php and change values
+* if you want to change expiration time or disable fragment caching : Admin dashboard -> Tools -> Fragment caching -> option and un check status 
 
 ## How use it?
 ### Cache creation
