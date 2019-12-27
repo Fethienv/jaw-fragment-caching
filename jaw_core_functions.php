@@ -12,12 +12,12 @@ if (!defined('ABSPATH'))
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
  */
-function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false) {
+function jaw_get_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false) {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
         global $EXPIRATION_constants;
         $exp = $EXPIRATION_constants[$exp];
-        $load_fragment_cache = jaw_load_fragment_cache($section, $refrence, $exp, $unique);
+        $load_fragment_cache = jaw_load_cache_fragment($section, $refrence, $exp, $unique);
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -38,12 +38,12 @@ function jaw_get_cache_part($section, $refrence, $exp = "JAW_PERSISTANT", $uniqu
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
  */
-function jaw_set_cache_part($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false) {
+function jaw_set_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false) {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
         global $EXPIRATION_constants;
         $exp = $EXPIRATION_constants[$exp];
-        $create_fragment_cache = jaw_create_fragment_cache($section, $refrence, $exp, $unique);
+        $create_fragment_cache = jaw_create_cache_fragment($section, $refrence, $exp, $unique);
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -79,7 +79,7 @@ function scan_fragments_dir($path) {
     foreach ($files as $sub_files) {
         $path = (substr($path, -1) == "/") ? $path : $path . '/';
         if (is_dir($path . '/' . $sub_files)) {
-            $fs = scan_dir($path . $sub_files);
+            $fs = scan_fragments_dir($path . $sub_files);
             foreach ($fs as $f) {
                 $files_list[] = $f;
             }
@@ -117,28 +117,27 @@ function scan_fragments_dir($path) {
  *                        upgrader_process_complete                        
  */
 function jaw_cleanup_all_fragments() {
-    $fragments_urls = scan_fragments_dir(FRAGMENT_DIR);
-    $result = [];
-    foreach ($fragments_urls as $fragments) {
-        if (is_dir($fragments)) {
-            $result[] = rmdir($fragments);
-        } else {
-            $result[] = unlink($fragments);
-        }
-    }
-}
+    $cleanup_paths = scan_fragments_dir(FRAGMENT_DIR);
 
-/**                      
- * jaw_clean_fragments_by_section_and_reference:
- * jaw_clean_fragments_by_post:                 
- * jaw_clean_fragments_by_post_and_by_section:   
- */
+    /**
+     * Filter fragment cache files to remove
+     *
+     * @since 1.0.0
+     *
+     * @param array $cleanup_paths List of paths cache files to remove
+     */
+    $cleanup_paths = apply_filters('jaw_cleanup_all_fragments_paths', $cleanup_paths);
+
+    $results = jaw_remove_cache_fragments($cleanup_paths);
+    return $results;
+}
 
 /**
  * Clean up fragments by post
  *
  * @since    1.0.0
- * @param    int               $postid             post id.
+ * @param    int               $postid             WP Post id.
+ * @param    WP_Post           $post               WP Post object.
  * @fire:    with hooks :
  *                        save_post 
  *                        edit_post
@@ -148,30 +147,31 @@ function jaw_cleanup_all_fragments() {
  *                        wp_update_comment_count
  *                        pre_post_update                 
  */
-function jaw_remove_cache_part_by_post($postid) {
+function jaw_cleanup_cache_fragments_by_post($postid, $post = null) {
 
-    /* to clean up fragment or more by post or all */
-    /* must use add_filter after tigred processors complete */
+    $post_fragments_path = FRAGMENT_DIR . $postid . '/';
+    $cleanup_paths = scan_fragments_dir($post_fragments_path);
 
     /**
-     * Filter URLs cache files to remove
+     * Filter fragment cache files to remove
      *
-     * @since 1.0
+     * @since 1.0.0
      *
-     * @param array $purge_urls List of URLs cache files to remove
+     * @param array $cleanup_paths List of paths cache files to remove
      */
-    /* get all parts in array */
-    $purge_urls = apply_filters('rocket_post_purge_urls', $purge_urls, $post);
+    $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_post_paths', $cleanup_paths, $postid);
 
-    /* than remove parts proccess */
-    /* fire this function when post update */
+    $results = jaw_remove_cache_fragments($cleanup_paths);
+
+    return $results;
 }
 
 /**
  * Clean up fragments by section & refernce
  *
  * @since    1.0.0
- * @param    int               $postid             post id.
+ * @param    string               $section         section name.
+ * @param    string               $refrence        reference id.
  * @fire:    with hooks :
  *                        save_post 
  *                        edit_post
@@ -181,30 +181,60 @@ function jaw_remove_cache_part_by_post($postid) {
  *                        wp_update_comment_count
  *                        pre_post_update                 
  */
-function jaw_remove_cache_part_by_section_refernce($postid) {
+function jaw_cleanup_cache_fragments_by_section_refernce($section, $refrence) {
 
-    /* to clean up fragment or more by post or all */
-    /* must use add_filter after tigred processors complete */
+    // to define symbole * mean all 
+    $section = (empty($section) || $section == "*" || !$section ) ? "" : $section;
+    $refrence = (empty($refrence) || $refrence == "*" || !$refrence) ? "" : $refrence;
+
+    $fragments_paths = scan_fragments_dir(FRAGMENT_DIR);
+    // delete cases: 
+    if (!empty($section) && !empty($refrence)) {
+        // delete spesific section an thier files in all posts
+        foreach ($fragments_paths as $paths) {
+            if (strpos($paths, $section) && strpos($paths, $refrence)) {
+                $cleanup_paths[] = $paths;
+            }
+        }
+    } elseif (!empty($section) && empty($refrence)) {
+        // delete spesific section an thier files in all posts
+        foreach ($fragments_paths as $paths) {
+            if (strpos($paths, $section)) {
+                $cleanup_paths[] = $paths;
+            }
+        }
+    } elseif (empty($section) && !empty($refrence)) {
+        // delete spesific file in all sections an in all posts
+        foreach ($fragments_paths as $paths) {
+            if (!is_dir($paths) && strpos($paths, "_" . $refrence . "_")) {
+                $cleanup_paths[] = $paths;
+            }
+        }
+    } else {
+        return;
+    }
 
     /**
-     * Filter URLs cache files to remove
+     * Filter fragment cache files to remove
      *
-     * @since 1.0
+     * @since 1.0.0
      *
-     * @param array $purge_urls List of URLs cache files to remove
+     * @param array $cleanup_paths List of paths cache files to remove
      */
-    /* get all parts in array */
-    $purge_urls = apply_filters('rocket_post_purge_urls', $purge_urls, $post);
+    $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_section_refernce_paths', $cleanup_paths, $section, $refrence);
 
-    /* than remove parts proccess */
-    /* fire this function when post update */
+    $results = jaw_remove_cache_fragments($cleanup_paths);
+
+    return $results;
 }
 
 /**
- * Clean up fragments by post or section or refernce or both
+ * Clean up fragments by post, section & refernce
  *
  * @since    1.0.0
- * @param    int               $postid             post id.
+ * @param    int                  $postid          post id.
+ * @param    string               $section         section name.
+ * @param    string               $refrence        reference id.
  * @fire:    with hooks :
  *                        save_post 
  *                        edit_post
@@ -214,40 +244,139 @@ function jaw_remove_cache_part_by_section_refernce($postid) {
  *                        wp_update_comment_count
  *                        pre_post_update                 
  */
-function jaw_remove_cache_part($postid) {
+function jaw_cleanup_cache_fragment($postid, $section = "", $refrence = "") {
 
-    /* to clean up fragment or more by post or all */
-    /* must use add_filter after tigred processors complete */
+    // to define symbole * mean all 
+    $postid = (empty($postid) || $postid == "*" || !$postid ) ? "" : $postid;
+    $section = (empty($section) || $section == "*" || !$section ) ? "" : $section;
+    $refrence = (empty($refrence) || $refrence == "*" || !$refrence) ? "" : $refrence;
+
+    $FRAGMENT_DIR_by_post = FRAGMENT_DIR . $postid . '/';
+    // delete cases: 
+    if (empty($postid) && (!empty($section) || !empty($refrence))) {
+        // delete by section and $refrence
+        return jaw_cleanup_cache_fragments_by_section_refernce($section, $refrence);
+    } elseif (empty($section) && empty($refrence)) {
+        // delete by postid
+        return jaw_cleanup_cache_fragments_by_post($postid);
+    } elseif (!empty($section) && empty($refrence)) {
+        // delete all in postid/section
+        $cleanup_paths = scan_fragments_dir($FRAGMENT_DIR_by_post . $section . '/');
+    } elseif (empty($section) && !empty($refrence)) {
+        // delete recresive of all cache files has refrence in postid 
+        $paths_array = scan_fragments_dir($FRAGMENT_DIR_by_post);
+        foreach ($paths_array as $paths) {
+            if (!is_dir($paths) && strpos($paths, "_" . $refrence . "_")) {
+                $cleanup_paths[] = $paths;
+            }
+        }
+    } elseif (!empty($section) && !empty($refrence)) {
+        // delete recresive of all cache files has refrence in postid 
+        $paths_array = scan_fragments_dir($FRAGMENT_DIR_by_post . $section . '/');
+        foreach ($paths_array as $paths) {
+            if (strpos($paths, "_" . $refrence . "_")) {
+                $cleanup_paths[] = $paths;
+            }
+        }
+    }elseif (empty($postid) && empty($section) && empty($refrence)) {
+        // cleanup all fragments 
+        jaw_cleanup_all_fragments();
+    } else {
+        return;
+    }
 
     /**
-     * Filter URLs cache files to remove
+     * Filter fragment cache files to remove
      *
-     * @since 1.0
+     * @since 1.0.0
      *
-     * @param array $purge_urls List of URLs cache files to remove
+     * @param array $cleanup_paths List of paths cache files to remove
      */
-    /* get all parts in array */
-    $purge_urls = apply_filters('rocket_post_purge_urls', $purge_urls, $post);
+    $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $postid, $section, $refrence);
 
-    /* than remove parts proccess */
-    /* fire this function when post update */
+    $results = jaw_remove_cache_fragments($cleanup_paths);
+
+    return $results;
 }
 
 /**
- * cleanup fragment cache
- * 
- * $section
- * $refrence
+ * remove cache file using path
+ *
+ * @since    1.0.0
+ * @param    string               $fragment_cache_file         fragment cache file path.
  */
-function jaw_cleanup_fragment_cache($section, $refrence) {
-    $fragment_cache_dir = FRAGMENT_DIR . '/' . $section . '/';
-    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence);
-    $fragment_cache_files = glob($fragment_cache_file . '*.php');
-    $results = array();
-    foreach ($fragment_cache_files as $cache_file) {
-        $results[] = unlink($fragment_cache_dir . $cache_file);
+function jaw_remove_cache_fragment_file($fragment_cache_file) {
+    return unlink($fragment_cache_file);
+}
+
+/**
+ * remove cache dir using path
+ *
+ * @since    1.0.0
+ * @param    string               $fragment_cache_dir        fragment cache dir path.
+ */
+function jaw_remove_cache_fragment_dir($fragment_cache_dir) {
+    return rmdir($fragment_cache_dir);
+}
+
+/**
+ * remove cache files using array path
+ *
+ * @since    1.0.0
+ * @param    array               $cleanup_paths         list of fragment cache paths.
+ */
+function jaw_remove_cache_fragments($cleanup_paths) {
+    $result = array();
+    foreach ($cleanup_paths as $fragments) {
+        if (is_dir($fragments)) {
+            $result[] = jaw_remove_cache_fragment_dir($fragments);
+        } else {
+            $result[] = jaw_remove_cache_fragment_file($fragments);
+        }
     }
-    return (in_array(false, $results)) ? false : true;
+    return $result;
+}
+
+/**
+ * add suffix by user role
+ *
+ * @since    1.0.0
+ * @param    boolean               $unique        enable or disable this option.
+ */
+function jaw_get_user_suffix($unique = false) {
+    if (is_user_logged_in() && $unique) {
+        $user = (current_user_can('manage_options')) ? "admin" : "user";
+    } else {
+        $user = "visitor";
+    }
+    return $user;
+}
+
+/**
+ * add suffix by device
+ *
+ * @since    1.0.0
+ * @param    boolean               $unique        enable or disable this option.
+ */
+function jaw_get_device_suffix($unique = true) {
+    if (wp_is_mobile() && $unique) {
+        $device = "mobile_";
+    } else {
+        $device = "desktop_";
+    }
+    return $device;
+}
+
+/**
+ * get cahe file name using section and refernce
+ *
+ * @since    1.0.0
+ * @param    string               $section         section name.
+ * @param    string               $refrence        reference id.
+ */
+function jaw_fragment_cache_file_name($section, $refrence, $unique = true) {
+    $device_suffix = jaw_get_device_suffix($unique);
+    return $fragment_cache_file_name = FRAGMENT_FILE_PREFFIX . "_" . $device_suffix . $section . "_" . $refrence . "_";
 }
 
 /**
@@ -259,13 +388,9 @@ function jaw_cleanup_fragment_cache($section, $refrence) {
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
  */
-function jaw_create_fragment_cache($section, $refrence, $exp = "", $unique = false) {
+function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = false) {
     global $wp_query, $unique_sufix;
-    if (is_user_logged_in() && $unique) {
-        $user = (current_user_can('manage_options')) ? "admin" : "user";
-    } else {
-        $user = "visitor";
-    }
+    $user_suffix = jaw_get_user_suffix($unique);
     $content = '<?php if ( ! defined( "ABSPATH" ) ) exit;?>';
     $fragment_cache_page_dir = FRAGMENT_DIR . $wp_query->post->ID . '/';
     $fragment_cache_section_dir = $fragment_cache_page_dir . $section . '/';
@@ -280,7 +405,7 @@ function jaw_create_fragment_cache($section, $refrence, $exp = "", $unique = fal
     if (!is_dir($fragment_cache_section_dir)) {
         mkdir($fragment_cache_section_dir);
     }
-    $fragment_cache_file = $fragment_cache_section_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user . '_' . $unique_sufix . '.php';
+    $fragment_cache_file = $fragment_cache_section_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user_suffix . '_' . $unique_sufix . '.php';
 
     if (!file_exists($fragment_cache_file)) {
         $content = ob_get_clean();
@@ -293,16 +418,6 @@ function jaw_create_fragment_cache($section, $refrence, $exp = "", $unique = fal
 }
 
 /**
- * remove cache file using path
- *
- * @since    1.0.0
- * @param    string               $fragment_cache_file         fragment cache file path.
- */
-function jaw_remove_fragment_cache($fragment_cache_file) {
-    return unlink($fragment_cache_file);
-}
-
-/**
  * load cache file using section, refernce and expiration values
  *
  * @since    1.0.0
@@ -311,15 +426,11 @@ function jaw_remove_fragment_cache($fragment_cache_file) {
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
  */
-function jaw_load_fragment_cache($section, $refrence, $exp = "", $unique = false) {
+function jaw_load_cache_fragment($section, $refrence, $exp = "", $unique = false) {
     global $wp_query, $unique_sufix;
-    if (is_user_logged_in() && $unique) {
-        $user = (current_user_can('manage_options')) ? "admin" : "user";
-    } else {
-        $user = "visitor";
-    }
+    $user_suffix = jaw_get_user_suffix($unique);
     $fragment_cache_dir = FRAGMENT_DIR . $wp_query->post->ID . '/' . $section . '/';
-    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user . '_' . $unique_sufix . '.php';
+    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user_suffix . '_' . $unique_sufix . '.php';
     if (file_exists($fragment_cache_file)) {
         $last_change = filectime($fragment_cache_file);
         $duration = time() - $last_change;
@@ -327,21 +438,10 @@ function jaw_load_fragment_cache($section, $refrence, $exp = "", $unique = false
             require_once $fragment_cache_file;
             return true;
         }
-        jaw_remove_fragment_cache($fragment_cache_file);
+        jaw_remove_cache_fragment_file($fragment_cache_file);
         return false;
     }
     return false;
-}
-
-/**
- * get cahe file name using section and refernce
- *
- * @since    1.0.0
- * @param    string               $section         section name.
- * @param    string               $refrence        reference id.
- */
-function jaw_fragment_cache_file_name($section, $refrence) {
-    return (wp_is_mobile()) ? "fragment_cache_mobile_" . $section . "_" . $refrence . "_" : "fragment_cache_desktop_" . $section . "_" . $refrence . "_";
 }
 
 /**
@@ -380,3 +480,48 @@ function register_in_log($message, $log_file = "") {
         file_put_contents($log_file, $current);
     }
 }
+
+// Launch hooks that cleanup all cache fragments files.
+add_action( 'switch_theme', 'jaw_cleanup_all_fragments' );                                           // When user change theme.
+add_action( 'user_register', 'jaw_cleanup_all_fragments' );                                          // When a user is added.
+add_action( 'profile_update', 'jaw_cleanup_all_fragments' );                                         // When a user is updated.
+add_action( 'deleted_user', 'jaw_cleanup_all_fragments' );                                           // When a user is deleted.
+add_action( 'wp_update_nav_menu', 'jaw_cleanup_all_fragments' );                                     // When a custom menu is update. note: to be delete when create specific code
+add_action( 'update_option_sidebars_widgets', 'jaw_cleanup_all_fragments' );                         // When you change the order of widgets.
+add_action( 'update_option_category_base', 'jaw_cleanup_all_fragments' );                            // When category permalink prefix is update.
+add_action( 'update_option_tag_base', 'jaw_cleanup_all_fragments' );                                 // When tag permalink prefix is update.
+add_action( 'permalink_structure_changed', 'jaw_cleanup_all_fragments' );                            // When permalink structure is update.
+add_action( 'create_term', 'jaw_cleanup_all_fragments' );                                            // When a term is created.
+add_action( 'edited_terms', 'jaw_cleanup_all_fragments' );                                           // When a term is updated.
+add_action( 'delete_term', 'jaw_cleanup_all_fragments' );                                            // When a term is deleted.
+add_action( 'add_link', 'jaw_cleanup_all_fragments' );                                               // When a link is added.
+add_action( 'edit_link', 'jaw_cleanup_all_fragments' );                                              // When a link is updated.
+add_action( 'delete_link', 'jaw_cleanup_all_fragments' );                                            // When a link is deleted.
+add_action( 'customize_save', 'jaw_cleanup_all_fragments' );                                         // When customizer is saved.
+add_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), 'jaw_cleanup_all_fragments' ); // When location of a menu is updated.
+add_action( 'upgrader_process_complete', 'jaw_cleanup_all_fragments' );                              // When a theme is updated. note: to be update when create specific code
+
+
+/** Note: to be updated: when create a specific code
+ * Cleanup all fragments When a widget is updated
+ *
+ * @since 1.0.0
+ *
+ * @param  object $instance Widget instance.
+ * @return object Widget instance
+ */
+function jaw_widget_update_callback( $instance ) {
+	jaw_cleanup_all_fragments();
+	return $instance;
+}
+//add_filter( 'widget_update_callback', 'jaw_widget_update_callback' );
+
+
+// Launch hooks that cleanup fragment cache files by post.
+add_action( 'save_post',           'jaw_cleanup_cache_fragments_by_post');
+add_action( 'edit_post',           'jaw_cleanup_cache_fragments_by_post' );
+add_action( 'delete_post',           'jaw_cleanup_cache_fragments_by_post' );
+add_action( 'wp_trash_post',           'jaw_cleanup_cache_fragments_by_post' );
+add_action( 'clean_post_cache',        'jaw_cleanup_cache_fragments_by_post' );
+add_action( 'wp_update_comment_count', 'jaw_cleanup_cache_fragments_by_post' );
+add_action( 'pre_post_update', 'jaw_cleanup_cache_fragments_by_post' );
