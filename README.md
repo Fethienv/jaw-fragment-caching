@@ -101,7 +101,7 @@ function get_template( $template_path, $template_name, $cached = true ) {
 ```
 ### Cache cleanup
 #### Manual
-Admin dashboard -- Tools -- Fragment caching: 
+Admin dashboard -> Tools -> Fragment caching: 
 then select Cleanup to delete all fragments
 or click delete button near folder or fragment cache file
 
@@ -183,10 +183,10 @@ Or whene you add a specific code
 ### Filters:
 
 ```
-      $cleanup_paths = apply_filters('jaw_cleanup_all_fragments_paths', $cleanup_paths);
-      $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_post_paths', $cleanup_paths, $postid);
-      $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_section_refernce_paths', $cleanup_paths, $section, $refrence);
-      $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $postid, $section, $refrence);
+$cleanup_paths = apply_filters('jaw_cleanup_all_fragments_paths', $cleanup_paths);
+$cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_post_paths', $cleanup_paths, $postid);
+$cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_section_refernce_paths', $cleanup_paths, $section, $refrence);
+$cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $postid, $section, $refrence);
 ```
 
 ## Parametres:
