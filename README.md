@@ -5,6 +5,7 @@
 - [Features](#features)  
 - [Pictures](#pictures) 
 - [Installation](#installation) 
+- [Configurations](#configurations)
 - [How use it?](#how-use-it) 
    * [Cache creation](#cache-creation) 
         - [Method 1: Direct](#method-1-direct) 
