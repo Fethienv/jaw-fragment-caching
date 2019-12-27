@@ -44,9 +44,9 @@ Simple fragment caching wordpress plugin for developers
 
 ## Pictures:
 ![Image of Option](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/options.PNG?raw=true)
-![Image of Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/fragments.PNG?raw=true)
-![Image of Show Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/show%20cache%20files.PNG?raw=true)
-![Image of delete Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/cache%20files%20deleted.PNG?raw=true)
+![Image of Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/shows_fragments.PNG?raw=true)
+![Image of Show Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/show_fragments_cache_files.PNG?raw=true)
+![Image of delete Fragments](https://github.com/Fethienv/jaw-fragment-caching/blob/master/assets/img/delete_fragments.PNG?raw=true)
 
 ## How use it?
 ### Cache creation
