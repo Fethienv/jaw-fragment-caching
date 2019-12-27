@@ -6,8 +6,9 @@
  * and open the template in the editor.
  */
 
-$jaw_fragments_apikey = "54309511-0371-4db2-99b3-5e2967302af3";
-$FRAGMENT_DIR         = 'wp-content/cache/';
+$jaw_fragments_apikey  = "54309511-0371-4db2-99b3-5e2967302af3";
+$FRAGMENT_DIR          = 'wp-content/cache/';
+$FRAGMENT_FILE_PREFFIX = 'fragment_cache';
 
 //Security options
 $allow_delete = true; // Set to false to disable delete button and delete POST request.
@@ -16,7 +17,7 @@ $allow_create_folder = false; // Set to false to disable folder creation
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
-$disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
+$disallowed_patterns = [];//['*.php'];  // must be an array.  Matching files not allowed to be uploaded
 $hidden_patterns = [];//['*.php','.*']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
