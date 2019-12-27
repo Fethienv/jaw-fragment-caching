@@ -175,7 +175,7 @@ Or when change options, your specific code
       wp_update_comment_count
       pre_post_update
 ```
-Or whene you add a specific code 
+Or when you add a specific code 
 
 ## Hooks:
 ### Actions:
