@@ -53,7 +53,7 @@ Simple fragment caching wordpress plugin for developers
 ## Installation:
 Admin dashboard -> plugins -> add new  -> upload 
 
-## Configrations:
+## Configurations:
 * if you want change dirs: edit file general_config.php and change values
 * if you want to change expiration time or disable fragment caching : Admin dashboard -> Tools -> Fragment caching -> option and un check status 
 
