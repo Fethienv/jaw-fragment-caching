@@ -1,4 +1,4 @@
-# jaw-fragment-caching
+# Wordpress fragment caching plugin
 
 ##### Table of Contents  
 - [Introduction](#introduction)  
@@ -240,6 +240,7 @@ Or you can use Wordpress Trensient API constants, or duration in seconds
 /path/to/your/wp-content/cache/jawc-fragments-caching_{unique_sufix}/{postid}/{section_name}/fragment_cache_ {device} _ {section_name}_ {Refernce_in_section} _ {expiration} _ {user_type} _ {unique_sufix} .php
 
 ## Next updates:
+- Add more hooks.
 - create cache posts and section as folders.
 - uplaod fragment cache file
 - Preload cache fragments.
