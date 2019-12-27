@@ -131,7 +131,7 @@ jaw_cleanup_cache_fragment($postid, $section, $refrence)
 #### Using hooks
 ##### By using add filters: 
 ```
-  jaw_cleanup_cache_fragments_by_post_paths
+  jaw_cleanup_all_fragments_paths
                  or
   jaw_cleanup_cache_fragments_by_post_paths
 
@@ -179,6 +179,9 @@ Or whene you add a specific code
 
 ## Hooks:
 ### Actions:
+```
+
+```
 
 ### Filters:
 
