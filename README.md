@@ -53,12 +53,12 @@ Simple fragment caching wordpress plugin for developers
 #### Method 1: Direct
 ```
 
-if (!jaw_get_cache_part('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true)) {
+if (!jaw_get_cache_fragment('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true)) {
      jaw_start_fragment_caching();
      
      // your code
      
-     jaw_set_cache_part('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true);
+     jaw_set_cache_fragment('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true);
 }
 
 ```
@@ -73,23 +73,23 @@ function get_template( $template_path, $template_name, $cached = true ) {
     }
     
     // first fragment part
-    if (!jaw_get_cache_part($template_name, '1','JAW_RARLY',true)) {
+    if (!jaw_get_cache_fragment($template_name, '1','JAW_RARLY',true)) {
         jaw_start_fragment_caching();
 
         /// your template code or functions
         
-        jaw_set_cache_part($template_name, '1','JAW_RARLY',true);
+        jaw_set_cache_fragment($template_name, '1','JAW_RARLY',true);
     }
     
     // ...
    
     // n fragment part
-    if (!jaw_get_cache_part($template_name, 'n', MONTH_IN_SECONDS)) {
+    if (!jaw_get_cache_fragment($template_name, 'n', MONTH_IN_SECONDS)) {
         jaw_start_fragment_caching();
 
         /// your template code or functions
         
-        jaw_set_cache_part($template_name, 'n', MONTH_IN_SECONDS);
+        jaw_set_cache_fragment($template_name, 'n', MONTH_IN_SECONDS);
     }
     
     if(!$cached){
@@ -101,8 +101,44 @@ function get_template( $template_path, $template_name, $cached = true ) {
 ```
 ### Cache cleanup
 #### Manual
-#### Using hooks
+Admin dashboard -- Tools -- Fragment caching: 
+then select Cleanup to delete all fragments
+or click delete button near folder or fragment cache file
+
 #### Using functions
+```
+jaw_cleanup_all_fragments()
+```
+
+```
+jaw_cleanup_cache_fragments_by_post($postid)
+```
+* $section  : section to delete, you can use * to delete all sections in post
+
+```
+jaw_cleanup_cache_fragments_by_section_refernce($section, $refrence)
+```
+* $section  : section to delete, you can use * to delete all sections in post
+* $refrence : refrence to delete, you can use * to delete all refrences in specific section or all section
+
+```
+jaw_cleanup_cache_fragment($postid, $section, $refrence)
+```
+* $postid   : id of post to delete, you can use * to delete all posts
+* $section  : section to delete, you can use * to delete all sections in post
+* $refrence : refrence to delete, you can use * to delete all refrences in specific section or all section
+
+#### Using hooks
+##### By using add filters: 
+```
+  jaw_cleanup_cache_fragments_by_post_paths
+                 or
+  jaw_cleanup_cache_fragments_by_post_paths
+
+```
+for add fragments paths to regular clean up
+##### By using add action: 
+add cleanup funtion to any wordpress action
 
 ## Cleanup cases:
 #### Full:
@@ -131,11 +167,13 @@ Or when change options, your specific code
 
 #### Partial:
 ```
-wp_trash_post
-delete_post
-clean_post_cache
-wp_update_comment_count
-pre_post_update
+      save_post
+      edit_post
+      delete_post
+      wp_trash_post
+      clean_post_cache
+      wp_update_comment_count
+      pre_post_update
 ```
 Or whene you add a specific code 
 
@@ -143,6 +181,13 @@ Or whene you add a specific code
 ### Actions:
 
 ### Filters:
+
+```
+      $cleanup_paths = apply_filters('jaw_cleanup_all_fragments_paths', $cleanup_paths);
+      $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_post_paths', $cleanup_paths, $postid);
+      $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_section_refernce_paths', $cleanup_paths, $section, $refrence);
+      $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $postid, $section, $refrence);
+```
 
 ## Parametres:
 
