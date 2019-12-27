@@ -6,11 +6,6 @@
  * and open the template in the editor.
  */
 
-header("Content-Type: application/json");
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-
 include('../../global_config.php');
 
 global $jaw_fragments_apikey;
@@ -22,13 +17,29 @@ if (!isset($_POST['apikey']) || $jaw_fragments_apikey != $_POST['apikey']) {
 
 if ($_POST['action'] == 'list') {
     $path = (empty($_POST['open_path']) || !isset($_POST['open_path'])) ? err(404, 'File or Directory Not Found') : $_POST['open_path'];
+    send_headers();
     get_list($path);
 } elseif ($_POST['action'] == 'delete') {
-    $path = (empty($_POST['delete_path']) || !isset($_POST['delete_path'])) ? err(404, 'File or Directory Not Found') : $_POST['delete_path'];
-    delete_file_or_dir($path);
+    $path      = (empty($_POST['delete_path']) || !isset($_POST['delete_path'])) ? err(404, 'File or Directory Not Found') : $_POST['delete_path'];
+    $re_create = (empty($_POST['re_create_path']) || !isset($_POST['re_create_path'])) ? false : $_POST['re_create_path'];
+    send_headers();
+    delete_file_or_dir($path,$re_create);
 } elseif ($_POST['action'] == 'download') {
+    $path = (empty($_POST['download_path']) || !isset($_POST['download_path'])) ? err(404, 'File or Directory Not Found') : $_POST['download_path'];
+    download_file($path);
+} elseif ($_POST['action'] == 'upload') {
     //$path = (empty($_POST['delete_path']) || !isset($_POST['delete_path'])) ? err(404, 'File or Directory Not Found') : $_POST['delete_path'];
-    //delete_file_or_dir($path);
+    upload_file($path);
+} elseif ($_POST['action'] == 'create') {
+    //$path = (empty($_POST['delete_path']) || !isset($_POST['delete_path'])) ? err(404, 'File or Directory Not Found') : $_POST['delete_path'];
+    create_folder($path);
+}
+
+function send_headers() {
+    header("Content-Type: application/json");
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
 }
 
 function get_list($file) {
@@ -72,7 +83,7 @@ function get_list($file) {
     exit();
 }
 
-function delete_file_or_dir($path) {
+function delete_file_or_dir($path,$re_create) {
     $result = [];
     if (is_dir($path)) {
         $files = scan_dir($path);
@@ -86,7 +97,10 @@ function delete_file_or_dir($path) {
     } else {
         $result[] = delete_file($path);
     }
-    echo json_encode(['success' => true, 'results' => $result]);
+    if($re_create != "false"){
+        @mkdir($path);
+    }
+    echo json_encode(['success' => true, 're_create' => $re_create,'results' => $result]);
 }
 
 function delete_file($path) {
@@ -103,28 +117,83 @@ function scan_dir($path) {
     $files_list = array();
     $files = array_diff(scandir($path), ['.', '..']);
     foreach ($files as $sub_files) {
+       $path = (substr($path, -1) == "/") ? $path : $path . '/';
         if (is_dir($path . '/' . $sub_files)) {
-            $fs = scan_dir($path . '/' . $sub_files);
+            $fs = scan_dir($path . $sub_files);
             foreach ($fs as $f) {
                 $files_list[] = $f;
             }
         } else {
-            $files_list[] = $path . '/' . $sub_files;
+            $files_list[] = $path . $sub_files;
         }
     }
     $files_list[] = $path;
     return $files_list;
 }
 
-function is_forbidden_dir($dir) {
-    if(!isset($_POST['fragment_dir']) || empty($_POST['fragment_dir'])){
-       return true; 
+function download_file($path) {
+    global $disallowed_patterns;
+    foreach ($disallowed_patterns as $pattern) {
+        if (fnmatch($pattern, $path)) {
+            err(403, "Files of this type are not allowed.");
+            exit;
+        }
     }
-    $fragment_path       =  $_POST['fragment_dir'];
+    ob_start();
+    header('Content-Description: File Transfer');
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    header('Content-Type: ' . finfo_file($finfo, $path));
+    //header('Content-Type: application/octet-stream');
+    //header("Content-Type: application/text/x-vCard");
+    header('Content-Disposition: attachment; filename="' . basename($path) . '"');
+    header('Expires: 0');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($path));
+    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+    header("Content-Transfer-Encoding: binary");
+    ob_flush();
+    flush(); // Flush system output buffer
+    readfile($path);
+    ob_clean();
+    echo json_encode(['path' => $path]);
+    ob_flush();
+    flush();
+    exit;
+}
+
+function upload_file($path) {
+    global $disallowed_patterns;
+    foreach ($disallowed_patterns as $pattern) {
+        if (fnmatch($pattern, $_FILES['file_data']['name'])) {
+            err(403, "Files of this type are not allowed.");
+        }
+    }
+    $res = move_uploaded_file($_FILES['file_data']['tmp_name'], $path . '/' . $_FILES['file_data']['name']);
+    echo json_encode(['path' => $path]);
+    exit;
+}
+
+function create_folder($path) {
+    // don't allow actions outside root. we also filter out slashes to catch args like './../outside'
+    $dir = $_POST['name'];
+    $dir = str_replace('/', '', $dir);
+    if (substr($dir, 0, 2) === '..')
+        exit;
+    chdir($file);
+    @mkdir($_POST['name']);
+    echo json_encode(['path' => $dir]);
+    exit;
+}
+
+function is_forbidden_dir($dir) {
+    if (!isset($_POST['fragment_dir']) || empty($_POST['fragment_dir'])) {
+        return true;
+    }
+    $fragment_path = $_POST['fragment_dir'];
     $fragment_path_parts = explode('/', $fragment_path);
     $path_level = sizeof($fragment_path_parts);
     array_pop($fragment_path_parts);
-    $restrict_folder_level = "/".implode('/', $fragment_path_parts);
+    $restrict_folder_level = "/" . implode('/', $fragment_path_parts);
     $dir_parts = explode('/', $dir);
     $dir_level = sizeof($dir_parts);
     if ($dir == $restrict_folder_level || $dir_level < $path_level) {
@@ -135,7 +204,7 @@ function is_forbidden_dir($dir) {
 
 function err($code, $msg) {
     http_response_code($code);
-    echo json_encode(['code' => intval($code),  'msg' => $msg]);
+    echo json_encode(['code' => intval($code), 'msg' => $msg]);
 }
 
 function is_entry_ignored($entry, $allow_show_folders, $hidden_patterns) {
