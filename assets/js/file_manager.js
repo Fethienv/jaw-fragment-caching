@@ -14,43 +14,57 @@ jQuery((function ($) {
         message_box.empty();
         message_box.append('<p>Ready!</p>');
         $('a[id=open_fragment_home]').on("click", function () {
-            open_dir(fragment_path);
-            message_box.empty();
-            message_box.append('<p>Ready!</p>');
+            open_fragment_home();
+        });
+        $('a[id=cleanup_all_fragments]').on("click", function () {
+            cleanup_all_fragments();
         });
 
         table_search();
 
     });
 
-    function delete_file_or_dir(delete_this_path, open_path) {
+    function open_fragment_home() {
+        open_dir(fragment_path);
+        message_box.empty();
+        message_box.append('<p>Ready!</p>');
+    }
+
+    function cleanup_all_fragments() {
+        delete_file_or_dir(fragment_path, fragment_path,true);
+        message_box.empty();
+        message_box.append('<p>Ready!</p>');
+    }
+
+    function delete_file_or_dir(delete_this_path, open_path,re_create) {
         var r = confirm("Are you sure? did you want to delete " + delete_this_path);
         if (r == true) {
             tbody.empty();
             var data = {apikey: api_key,
                 delete_path: delete_this_path,
+                re_create_path: re_create,
                 action: "delete"
             };
             var html = "";
             var file_list = send_data(req_url, data);
             file_list.done(function (recived_data) {
                 $.each(recived_data.results, function (k, v) {
-                    html += '<p>' + v.removed_path + ' ' + (v.result ? 'deleted' : 'not deleted') + '</p>';
+                    html += '<p>' + v.removed_path + ' ' + (v.result ? 'deleted' + ' re_create:' + recived_data.re_create : 'not deleted') + '</p>';
                 });
                 open_dir(open_path);
-                message_box.empty(); 
+                message_box.empty();
                 message_box.append(html);
             });
         } else {
-           if (message_box.hasClass("jaw_error")) {
+            if (message_box.hasClass("jaw_error")) {
                 message_box.removeClass("jaw_error");
             }
             if (message_box.hasClass("jaw_success")) {
                 message_box.removeClass("jaw_success");
             }
-            message_box.addClass("jaw_init"); 
-           message_box.empty(); 
-           message_box.append('<p>Delete action cancled</p>');
+            message_box.addClass("jaw_init");
+            message_box.empty();
+            message_box.append('<p>Delete action cancled</p>');
         }
     }
 
@@ -65,14 +79,14 @@ jQuery((function ($) {
             message_box.append('<p>Dowloading is starting</p>');
         });
     }
- 
+
     function upload_file(download_this_file) {
         var data = {apikey: api_key,
             download_path: download_this_file,
             action: "download"
         };
         var file_list = send_data(req_url, data);
-        file_list.done(function (recived_data) { 
+        file_list.done(function (recived_data) {
             message_box.empty();
             message_box.append('<p>Dowloading is starting</p>');
         });
@@ -127,7 +141,7 @@ jQuery((function ($) {
             $('a[id^=delete_fragment_]').on("click", function () {
                 var open_path = $(this).attr("data-parent-path");
                 var delete_path = $(this).attr("data-delete-path");
-                delete_file_or_dir(delete_path, open_path);
+                delete_file_or_dir(delete_path, open_path,false);
             });
             this_rows = table_pagination(false);
         }).fail(function () {
@@ -167,7 +181,7 @@ jQuery((function ($) {
                 $('a[id^=delete_fragment_]').on("click", function () {
                     var open_path = $(this).attr("data-parent-path");
                     var delete_path = $(this).attr("data-delete-path");
-                    delete_file_or_dir(delete_path, open_path);
+                    delete_file_or_dir(delete_path, open_path,false);
                 });
             }
         });
