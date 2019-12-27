@@ -26,7 +26,8 @@ global $jaw_fragments_apikey, $allow_delete,
 <div id="top">
     <div class="icon-bar">
         <div class="navbar">
-            <a class="active" id='open_fragment_home'><i class="fa fa-fw fa-home"></i> Home</a>
+            <a class="active" id='open_fragment_home'   ><i class="fa fa-fw fa-home"></i> Home</a>
+            <a                id='cleanup_all_fragments'><i class="fa fa-fw fa-eraser"></i> Cleanup</a>
         </div> 
         <div class="jaw_search">
             <label id ='jaw_search_label' for="jaw_search">Search:</label>
