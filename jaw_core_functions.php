@@ -10,8 +10,8 @@ if (!defined('ABSPATH'))
  * @param    string               $section         section name.
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
- * @param    boolean              $unique          cache type, is same or diferent by user role.
- * @param    mixte                $gpdr            cookie name or false.
+ * @param    mixte                $unique          cache type, is same or diferent by user role.
+ * @param    boolean              $gpdr            cookie name or false.
  */
 function jaw_get_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false, $gpdr = false) {
     if (FRAGMENT_CACHING_STATUS) {
@@ -37,8 +37,8 @@ function jaw_get_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $u
  * @param    string               $section         section name.
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
- * @param    boolean              $unique          cache type, is same or diferent by user role.
- * @param    mixte                $gpdr            cookie name or false.
+ * @param    mixte                $unique          cache type, is same or diferent by user role.
+ * @param    boolean              $gpdr            cookie name or false.
  */
 function jaw_set_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false, $gpdr = false) {
     if (FRAGMENT_CACHING_STATUS) {
@@ -327,14 +327,20 @@ function jaw_remove_cache_fragments($cleanup_paths) {
  * add suffix by user role
  *
  * @since    1.0.0
- * @param    boolean               $unique        enable or disable this option.
+ * @param    mixte               $unique        enable or disable this option.
  */
 function jaw_get_user_suffix($unique = false) {
-    if (is_user_logged_in() && $unique) {
+    global $jaw_user_role,$jaw_user_id;
+    if($unique === true && is_user_logged_in()){
         $user = (current_user_can('manage_options')) ? "admin" : "user";
-    } else {
-        $user = "visitor";
+    } elseif($unique == "role" && is_user_logged_in()) {
+        $user = $jaw_user_role;
+    } elseif($unique == "id" && is_user_logged_in()) {
+        $user = $jaw_user_id;
+    }else{
+        $user = "visitor"; 
     }
+    
     return $user;
 }
 
@@ -342,11 +348,11 @@ function jaw_get_user_suffix($unique = false) {
  * add suffix by gpdr cookies
  *
  * @since    1.0.0
- * @param    mixte                $gpdr            cookie name or false.
+ * @param    boolean                $gpdr            enable or disable this option.
  */
-function jaw_get_gpdr_suffix($gpdr = false) {
-    if ($gpdr != false && isset($_COOKIE[$gpdr])) {
-        $gpdr_suffix = '_'.$_COOKIE[$gpdr];
+function jaw_get_gpdr_suffix($gpdr = false) {    
+    if ($gpdr != false && isset($_COOKIE[jaw_gpdr_cookie_name])) {
+        $gpdr_suffix = '_'.$_COOKIE[jaw_gpdr_cookie_name];
     } else { 
         $gpdr_suffix = "";
     }
@@ -387,8 +393,8 @@ function jaw_fragment_cache_file_name($section, $refrence, $unique = true) {
  * @param    string               $section         section name.
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
- * @param    boolean              $unique          cache type, is same or diferent by user role.
- * @param    mixte                $gpdr            cookie name or false.
+ * @param    mixte                $unique          cache type, is same or diferent by user role.
+ * @param    boolean              $gpdr            cookie name or false.
  */
 function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = false, $gpdr = false) {
     global $wp_query, $unique_sufix;
@@ -427,8 +433,8 @@ function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = fal
  * @param    string               $section         section name.
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
- * @param    boolean              $unique          cache type, is same or diferent by user role.
- * @param    mixte                $gpdr            cookie name or false.
+ * @param    mixte                $unique          cache type, is same or diferent by user role.
+ * @param    boolean              $gpdr            cookie name or false.
  */
 function jaw_load_cache_fragment($section, $refrence, $exp = "", $unique = false, $gpdr = false) {
     global $wp_query, $unique_sufix;
