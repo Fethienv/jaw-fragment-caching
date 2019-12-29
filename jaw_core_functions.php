@@ -11,13 +11,14 @@ if (!defined('ABSPATH'))
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
+ * @param    mixte                $gpdr            cookie name or false.
  */
-function jaw_get_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false) {
+function jaw_get_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false, $gpdr = false) {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
         global $EXPIRATION_constants;
         $exp = $EXPIRATION_constants[$exp];
-        $load_fragment_cache = jaw_load_cache_fragment($section, $refrence, $exp, $unique);
+        $load_fragment_cache = jaw_load_cache_fragment($section, $refrence, $exp, $unique, $gpdr);
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -37,13 +38,14 @@ function jaw_get_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $u
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
+ * @param    mixte                $gpdr            cookie name or false.
  */
-function jaw_set_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false) {
+function jaw_set_cache_fragment($section, $refrence, $exp = "JAW_PERSISTANT", $unique = false, $gpdr = false) {
     if (FRAGMENT_CACHING_STATUS) {
         $start_time = (FRAGMENT_DURATION) ? microtime(true) : "";
         global $EXPIRATION_constants;
         $exp = $EXPIRATION_constants[$exp];
-        $create_fragment_cache = jaw_create_cache_fragment($section, $refrence, $exp, $unique);
+        $create_fragment_cache = jaw_create_cache_fragment($section, $refrence, $exp, $unique, $gpdr);
         if (FRAGMENT_DURATION) {
             $end_time = microtime(true);
             $execution_time = ($end_time - $start_time);
@@ -171,15 +173,7 @@ function jaw_cleanup_cache_fragments_by_post($postid, $post = null) {
  *
  * @since    1.0.0
  * @param    string               $section         section name.
- * @param    string               $refrence        reference id.
- * @fire:    with hooks :
- *                        save_post 
- *                        edit_post
- *                        delete_post
- *                        wp_trash_post
- *                        clean_post_cache
- *                        wp_update_comment_count
- *                        pre_post_update                 
+ * @param    string               $refrence        reference id.              
  */
 function jaw_cleanup_cache_fragments_by_section_refernce($section, $refrence) {
 
@@ -234,15 +228,7 @@ function jaw_cleanup_cache_fragments_by_section_refernce($section, $refrence) {
  * @since    1.0.0
  * @param    int                  $postid          post id.
  * @param    string               $section         section name.
- * @param    string               $refrence        reference id.
- * @fire:    with hooks :
- *                        save_post 
- *                        edit_post
- *                        delete_post
- *                        wp_trash_post
- *                        clean_post_cache
- *                        wp_update_comment_count
- *                        pre_post_update                 
+ * @param    string               $refrence        reference id.             
  */
 function jaw_cleanup_cache_fragment($postid, $section = "", $refrence = "") {
 
@@ -353,6 +339,21 @@ function jaw_get_user_suffix($unique = false) {
 }
 
 /**
+ * add suffix by gpdr cookies
+ *
+ * @since    1.0.0
+ * @param    mixte                $gpdr            cookie name or false.
+ */
+function jaw_get_gpdr_suffix($gpdr = false) {
+    if ($gpdr != false && isset($_COOKIE[$gpdr])) {
+        $gpdr_suffix = '_'.$_COOKIE[$gpdr];
+    } else { 
+        $gpdr_suffix = "";
+    }
+    return $gpdr_suffix;
+}
+
+/**
  * add suffix by device
  *
  * @since    1.0.0
@@ -387,10 +388,12 @@ function jaw_fragment_cache_file_name($section, $refrence, $unique = true) {
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
+ * @param    mixte                $gpdr            cookie name or false.
  */
-function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = false) {
+function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = false, $gpdr = false) {
     global $wp_query, $unique_sufix;
     $user_suffix = jaw_get_user_suffix($unique);
+    $gpdr_suffix = jaw_get_gpdr_suffix($gpdr);
     $content = '<?php if ( ! defined( "ABSPATH" ) ) exit;?>';
     $fragment_cache_page_dir = FRAGMENT_DIR . $wp_query->post->ID . '/';
     $fragment_cache_section_dir = $fragment_cache_page_dir . $section . '/';
@@ -405,7 +408,7 @@ function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = fal
     if (!is_dir($fragment_cache_section_dir)) {
         mkdir($fragment_cache_section_dir);
     }
-    $fragment_cache_file = $fragment_cache_section_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user_suffix . '_' . $unique_sufix . '.php';
+    $fragment_cache_file = $fragment_cache_section_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user_suffix . $gpdr_suffix . '_' .$unique_sufix . '.php';
 
     if (!file_exists($fragment_cache_file)) {
         $content = ob_get_clean();
@@ -425,12 +428,14 @@ function jaw_create_cache_fragment($section, $refrence, $exp = "", $unique = fal
  * @param    string               $refrence        reference id.
  * @param    string               $exp             expiration constant.
  * @param    boolean              $unique          cache type, is same or diferent by user role.
+ * @param    mixte                $gpdr            cookie name or false.
  */
-function jaw_load_cache_fragment($section, $refrence, $exp = "", $unique = false) {
+function jaw_load_cache_fragment($section, $refrence, $exp = "", $unique = false, $gpdr = false) {
     global $wp_query, $unique_sufix;
     $user_suffix = jaw_get_user_suffix($unique);
+    $gpdr_suffix = jaw_get_gpdr_suffix($gpdr);
     $fragment_cache_dir = FRAGMENT_DIR . $wp_query->post->ID . '/' . $section . '/';
-    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user_suffix . '_' . $unique_sufix . '.php';
+    $fragment_cache_file = $fragment_cache_dir . jaw_fragment_cache_file_name($section, $refrence) . $exp . '_' . $user_suffix . $gpdr_suffix . '_' . $unique_sufix . '.php';
     if (file_exists($fragment_cache_file)) {
         $last_change = filectime($fragment_cache_file);
         $duration = time() - $last_change;
