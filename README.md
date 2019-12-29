@@ -218,7 +218,7 @@ $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $p
 * Section_name: optional name
 * Refernce_in_section : optional name
 * Expiration_constant: must be one of plugin Expiration constants or Trensient API constants
-* unique_cache: false or true to get 3 types of unique cache "admins, users and visitors" or constant "specific" to sperate by role
+* unique_cache: false or true to get 3 types of unique cache "admins, users and visitors" or constants "role" to sperate by role or "id" to sperate by user id
 * gpdr: false or true to sperate fragment by gpdr
 
 **Note:** those parametres must be the same in jaw_get_cache_part and jaw_set_cache_part for each section and referce
