@@ -37,6 +37,7 @@ Simple fragment caching wordpress plugin for developers
 - Seperate fragments by device: mobile, pc.
 - Seperate fragments by post id,
 - Seperate fragments by GPDR
+- Seperate fragments by custom dynamic code using reference parameter 
 - Can clean up all fragments.
 - Can clean only one, or more fragments.
 - Can control expiration time
