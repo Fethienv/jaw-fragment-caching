@@ -34,6 +34,7 @@ Simple fragment caching wordpress plugin for developers
 
 ## Features:
 - Seperate fragments by users role: admin, users & visitors.
+- Seperate fragments by users id.
 - Seperate fragments by device: mobile, pc.
 - Seperate fragments by post id,
 - Seperate fragments by GPDR
