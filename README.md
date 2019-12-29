@@ -84,12 +84,12 @@ function get_template( $template_path, $template_name, $cached = true ) {
     }
     
     // first fragment part
-    if (!jaw_get_cache_fragment($template_name, '1','JAW_RARLY',true,true)) {
+    if (!jaw_get_cache_fragment($template_name, '1','JAW_RARLY','specific',true)) {
         jaw_start_fragment_caching();
 
         /// your template code or functions
         
-        jaw_set_cache_fragment($template_name, '1','JAW_RARLY',true,true);
+        jaw_set_cache_fragment($template_name, '1','JAW_RARLY','specific',true);
     }
     
     // ...
