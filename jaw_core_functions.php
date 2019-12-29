@@ -330,13 +330,13 @@ function jaw_remove_cache_fragments($cleanup_paths) {
  * @param    mixte               $unique        enable or disable this option.
  */
 function jaw_get_user_suffix($unique = false) {
-    global $jaw_user_role,$jaw_user_id;
+    global $current_user;
     if($unique === true && is_user_logged_in()){
         $user = (current_user_can('manage_options')) ? "admin" : "user";
     } elseif($unique == "role" && is_user_logged_in()) {
-        $user = $jaw_user_role;
+        $user = $current_user->roles[0];
     } elseif($unique == "id" && is_user_logged_in()) {
-        $user = $jaw_user_id;
+        $user = get_current_user_id();
     }else{
         $user = "visitor"; 
     }
