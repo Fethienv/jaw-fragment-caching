@@ -47,11 +47,6 @@ $EXPIRATION_constants = array(
                                'JAW_SPECIFIC_3'    => $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "JAW_SPECIFIC_3"'),
                              );
 
-// to be complete add user id and role
-$jaw_user_role = "user";
-$jaw_user_id   = "user";
-
-
     // you can add more cookies names here or by filter hook above
      $jaw_gpdr_cookies_names = array('cookie_notice_accepted');
 
