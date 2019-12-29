@@ -64,12 +64,12 @@ Admin dashboard -> plugins -> add new  -> upload
 #### Method 1: Direct
 ```
 
-if (!jaw_get_cache_fragment('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true,'cookie_notice_accepted')) {
+if (!jaw_get_cache_fragment('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true,true)) {
      jaw_start_fragment_caching();
      
      // your code
      
-     jaw_set_cache_fragment('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true,'cookie_notice_accepted');
+     jaw_set_cache_fragment('Section_name', 'Refernce_in_section','JAW_SPECIFIC_1',true,true);
 }
 
 ```
@@ -84,12 +84,12 @@ function get_template( $template_path, $template_name, $cached = true ) {
     }
     
     // first fragment part
-    if (!jaw_get_cache_fragment($template_name, '1','JAW_RARLY',true,'cookie_notice_accepted')) {
+    if (!jaw_get_cache_fragment($template_name, '1','JAW_RARLY',true,true)) {
         jaw_start_fragment_caching();
 
         /// your template code or functions
         
-        jaw_set_cache_fragment($template_name, '1','JAW_RARLY',true,'cookie_notice_accepted');
+        jaw_set_cache_fragment($template_name, '1','JAW_RARLY',true,true);
     }
     
     // ...
@@ -208,8 +208,8 @@ $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $p
 * Section_name: optional name
 * Refernce_in_section : optional name
 * Expiration_constant: must be one of plugin Expiration constants or Trensient API constants
-* unique_cache: true or false to get 3 types of unique cache "admins, users and visitors"
-* gpdr: false or cookie name to sperate fragment by gpdr
+* unique_cache: false or true to get 3 types of unique cache "admins, users and visitors" or constant "specific" to sperate by role
+* gpdr: false or true to sperate fragment by gpdr
 
 **Note:** those parametres must be the same in jaw_get_cache_part and jaw_set_cache_part for each section and referce
 
