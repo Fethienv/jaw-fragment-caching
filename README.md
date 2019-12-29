@@ -197,9 +197,19 @@ Or when you add a specific code
 ### Filters:
 
 ```
+// add more gpdr cookies names
+$jaw_gpdr_cookies_names = apply_filters('jaw_gpdr_cookie_names', $jaw_gpdr_cookies_names); 
+
+// filter paths when full cleanup
 $cleanup_paths = apply_filters('jaw_cleanup_all_fragments_paths', $cleanup_paths);
+
+// filter paths when post cleanup
 $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_post_paths', $cleanup_paths, $postid);
+
+// filter paths when cleanup by section & refernce
 $cleanup_paths = apply_filters('jaw_cleanup_cache_fragments_by_section_refernce_paths', $cleanup_paths, $section, $refrence);
+
+// filter paths when cleanup by post id & section & refernce
 $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $postid, $section, $refrence);
 ```
 
