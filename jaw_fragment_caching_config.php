@@ -30,11 +30,13 @@ include('global_config.php');
 // used for security
 $unique_sufix = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "unique_sufix"');
 
-// Note: if you change this you must change it also in  addons/file-manager/requests.php
 define('FRAGMENT_DIR', ABSPATH . $FRAGMENT_DIR.'jawc-fragments-caching_'.$unique_sufix.'/');
+define('FRAGMENT_FILE_PREFFIX', $FRAGMENT_FILE_PREFFIX);
 
 $FRAGMENT_DURATION = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "FRAGMENT_DURATION"');
 define('FRAGMENT_DURATION', $FRAGMENT_DURATION);
+
+//$jaw_fragments_apikey = $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "jaw_fragments_apikey"');
 
 /// EXPIRATION table
 $EXPIRATION_constants = array(
@@ -44,3 +46,28 @@ $EXPIRATION_constants = array(
                                'JAW_SPECIFIC_2'    => $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "JAW_SPECIFIC_2"'),
                                'JAW_SPECIFIC_3'    => $wpdb->get_var('SELECT DISTINCT option_value FROM '.$table_prefix.'fragment_caching WHERE option_name = "JAW_SPECIFIC_3"'),
                              );
+
+// to be complete add user id and role
+$jaw_user_role = "user";
+$jaw_user_id   = "user";
+
+
+    // you can add more cookies names here or by filter hook above
+     $jaw_gpdr_cookies_names = array('cookie_notice_accepted');
+
+     /**
+     * add more gpdr cookies names
+     *
+     * @since 1.0.0
+     *
+     * @param array $jaw_gpdr_cookie_name List of $jaw gpdr cookies names
+     */
+    $jaw_gpdr_cookies_names = apply_filters('jaw_gpdr_cookie_names', $jaw_gpdr_cookies_names);
+    
+    //select first defined cookie_name
+    foreach ($jaw_gpdr_cookies_names as $jaw_gpdr_cookie_name){
+        if(isset($_COOKIE[$jaw_gpdr_cookie_name])){
+            define('jaw_gpdr_cookie_name',$jaw_gpdr_cookie_name);
+            break;
+        } 
+    }
