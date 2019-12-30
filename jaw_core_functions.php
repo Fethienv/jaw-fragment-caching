@@ -324,23 +324,42 @@ function jaw_remove_cache_fragments($cleanup_paths) {
 }
 
 /**
+ * for get user id & role one time
+ *
+ * @since    1.0.0
+ * @param    void 
+ */
+function jaw_def_user_id() {
+    if (!defined("wp_get_current_user_role")) {
+        $current_user = wp_get_current_user();
+        $role = (current_user_can('manage_options')) ? "admin" : $current_user->roles[0];
+        define("wp_get_current_user_role", $role);
+    }
+    if (!defined("wp_get_current_user_id")) {
+        $userid = get_current_user_id();
+        define("wp_get_current_user_id", $userid);
+    }
+}
+
+/**
  * add suffix by user role
  *
  * @since    1.0.0
  * @param    mixte               $unique        enable or disable this option.
  */
-function jaw_get_user_suffix($unique = false) {      
-    if($unique === true && is_user_logged_in()){
+function jaw_get_user_suffix($unique = false) {
+    if ($unique === true && is_user_logged_in()) {
         $user = (current_user_can('manage_options')) ? "admin" : "user";
-    } elseif($unique == "role" && is_user_logged_in()) {
-        $current_user = (!isset($GLOBALS['current_user']) || empty($GLOBALS['current_user']))?wp_get_current_user():$GLOBALS['current_user'];
-        $user = (current_user_can('manage_options')) ? "admin" :$current_user->roles[0];
-    } elseif($unique == "id" && is_user_logged_in()) {
-        $user = get_current_user_id();
-    }else{
-        $user = "visitor"; 
+    } elseif ($unique == "role" && is_user_logged_in()) {
+        jaw_def_user_id();
+        $user = wp_get_current_user_role;
+    } elseif ($unique == "id" && is_user_logged_in()) {
+        jaw_def_user_id();
+        $user = wp_get_current_user_id;
+    } else {
+        $user = "visitor";
     }
-    
+
     return $user;
 }
 
