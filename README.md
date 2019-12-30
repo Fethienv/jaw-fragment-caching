@@ -226,11 +226,11 @@ $cleanup_paths = apply_filters('jaw_remove_cache_part_paths', $cleanup_paths, $p
 
 ## Expiration constants:
 
-- JAW_RARLY : value controllable form admin dashboard
+- JAW_RARLY : value controllable from admin dashboard
 - JAW_PERSISTANT: set cache to persistant
-- JAW_SPECIFIC_1:  value controllable form admin dashboard
-- JAW_SPECIFIC_1:  value controllable form admin dashboard
-- JAW_SPECIFIC_3:  value controllable form admin dashboard
+- JAW_SPECIFIC_1:  value controllable from admin dashboard
+- JAW_SPECIFIC_1:  value controllable from admin dashboard
+- JAW_SPECIFIC_3:  value controllable from admin dashboard
 
 Or you can use Wordpress Trensient API constants, or duration in seconds 
 
